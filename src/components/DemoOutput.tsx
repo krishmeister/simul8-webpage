@@ -7,6 +7,7 @@ interface Props {
   onBack: () => void;
   onReplay: () => void;
   onExit: () => void;
+  onNext?: () => void;
 }
 
 type Tab = 'outcome' | 'journey' | 'interrogate' | 'share';
@@ -18,7 +19,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'share', label: 'Share' },
 ];
 
-export default function DemoOutput({ scenario, onBack, onReplay, onExit }: Props) {
+export default function DemoOutput({ scenario, onBack, onReplay, onExit, onNext }: Props) {
   const [tab, setTab] = useState<Tab>('outcome');
   const [slider, setSlider] = useState(0);
   const out = scenario.output;
@@ -52,6 +53,11 @@ export default function DemoOutput({ scenario, onBack, onReplay, onExit }: Props
             <button type="button" className={styles.ghost} onClick={onReplay}>
               ↻ Replay
             </button>
+            {onNext && (
+              <button type="button" className={styles.ghostNext} onClick={onNext} data-testid="output-next">
+                See the loop close →
+              </button>
+            )}
             <button type="button" className={styles.close} onClick={onExit} aria-label="Exit demo">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                 <path d="M4 4l8 8M12 4l-8 8" />

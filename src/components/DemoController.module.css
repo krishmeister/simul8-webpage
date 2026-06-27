@@ -176,6 +176,152 @@
   cursor: default;
 }
 
+/* ---- Rail group header (non-clickable "Input" label) ---- */
+.railGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 11px 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  user-select: none;
+}
+.railGroup::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  opacity: 0.3;
+}
+.railGroupActive {
+  color: var(--demo);
+}
+.railGroupActive::before {
+  background: var(--demo);
+  opacity: 0.6;
+}
+
+/* Indented sub-step */
+.railSub {
+  padding-left: 28px;
+  font-size: 11.5px;
+}
+
+/* ---- Sub-box list (input stages) ---- */
+.subBoxList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--hairline);
+}
+.subBoxItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.subBoxDot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+.subBoxRelevant .subBoxDot {
+  background: var(--demo);
+}
+.subBoxDim .subBoxDot {
+  background: var(--ink-3);
+  opacity: 0.4;
+}
+.subBoxContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.subBoxName {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.subBoxDim .subBoxName {
+  color: var(--ink-3);
+}
+.subBoxContrib {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.subBoxNotUsed {
+  font-size: 11px;
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+/* ---- Intent callout (accumulate stage) ---- */
+.intentCallout {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--demo) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--demo) 25%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.intentLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--demo);
+}
+.intentText {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink);
+  font-style: italic;
+}
+
+/* ---- Resolve panel (resolve stage) ---- */
+.resolvePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+  border: 1px solid var(--hairline);
+}
+.resolveRow {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  gap: 8px;
+  align-items: baseline;
+}
+.resolveLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.resolveValue {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
 /* Mobile: bottom sheet with a horizontal rail (right-dock is desktop-only). */
 @media (max-width: 640px) {
   .bar {
@@ -218,5 +364,17 @@
   .detail {
     max-height: 5em;
     overflow-y: auto;
+  }
+  .railGroup {
+    display: none;
+  }
+  .railSub {
+    padding-left: 11px;
+  }
+  .subBoxContrib {
+    display: none;
+  }
+  .resolveRow {
+    grid-template-columns: 58px 1fr;
   }
 }

@@ -1,4 +1,4 @@
-import type { Scenario, StageId } from '../data/demoScenarios';
+import type { Scenario, StageId, FlowStage } from '../data/demoScenarios';
 import styles from './DemoController.module.css';
 
 interface Props {
@@ -11,14 +11,22 @@ interface Props {
 }
 
 const STAGE_LABEL: Record<StageId, string> = {
-  input: 'Input',
+  'input-external': 'External Data',
+  'input-category': 'Category Data',
+  'input-product': 'Product Data',
+  'input-linking': 'Data Linking',
   accumulate: 'Accumulate',
   subtaskA: 'Intent Inference',
   subtaskB: 'Method',
   engines: 'Engines',
   fusion: 'Fusion',
   output: 'Output',
+  resolve: 'Resolve',
 };
+
+function isInputStage(s: StageId) {
+  return s.startsWith('input-');
+}
 
 export default function DemoController({
   scenario,
@@ -49,32 +57,31 @@ export default function DemoController({
         </button>
       </div>
 
-      <div className={styles.rail} role="tablist" aria-label="Flow stages">
-        {flow.map((s, i) => (
-          <button
-            key={s.stage}
-            type="button"
-            role="tab"
-            aria-selected={i === stageIndex}
-            className={[
-              styles.railItem,
-              i === stageIndex ? styles.current : '',
-              i < stageIndex ? styles.done : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-            onClick={() => onJump(i)}
-            data-testid={`demo-stage-${s.stage}`}
-          >
-            <span className={styles.dot} aria-hidden="true" />
-            {STAGE_LABEL[s.stage]}
-          </button>
-        ))}
-      </div>
+      <Rail flow={flow} stageIndex={stageIndex} onJump={onJump} />
 
       <div className={styles.body}>
         <p className={styles.caption}>{stage.caption}</p>
         <p className={styles.detail}>{stage.detail}</p>
+
+        {isInputStage(stage.stage) && stage.inputComponentDetail && (
+          <SubBoxList comp={stage.inputComponentDetail} />
+        )}
+
+        {stage.stage === 'accumulate' && (
+          <div className={styles.intentCallout}>
+            <span className={styles.intentLabel}>The question</span>
+            <p className={styles.intentText}>{scenario.question}</p>
+          </div>
+        )}
+
+        {stage.stage === 'resolve' && stage.resolvedOutcome && (
+          <div className={styles.resolvePanel}>
+            <ResolveRow label="Predicted" value={stage.resolvedOutcome.predicted} />
+            <ResolveRow label="Actual" value={stage.resolvedOutcome.actual} />
+            <ResolveRow label="Gap" value={stage.resolvedOutcome.gap} />
+            <ResolveRow label="Update" value={stage.resolvedOutcome.update} />
+          </div>
+        )}
       </div>
 
       <div className={styles.transport}>
@@ -90,6 +97,125 @@ export default function DemoController({
     </div>
   );
 }
+
+// ---- Rail ----
+
+interface RailProps {
+  flow: FlowStage[];
+  stageIndex: number;
+  onJump: (i: number) => void;
+}
+
+function Rail({ flow, stageIndex, onJump }: RailProps) {
+  let inputGroupHeaderRendered = false;
+
+  return (
+    <div className={styles.rail} role="tablist" aria-label="Flow stages">
+      {flow.map((s, i) => {
+        if (isInputStage(s.stage)) {
+          const showHeader = !inputGroupHeaderRendered;
+          if (showHeader) inputGroupHeaderRendered = true;
+          const inputActive = isInputStage(flow[stageIndex]?.stage);
+          return (
+            <span key={`wrapper-${s.stage}`}>
+              {showHeader && (
+                <span
+                  className={[
+                    styles.railGroup,
+                    inputActive ? styles.railGroupActive : '',
+                  ].filter(Boolean).join(' ')}
+                  aria-hidden="true"
+                >
+                  Input
+                </span>
+              )}
+              <button
+                key={s.stage}
+                type="button"
+                role="tab"
+                aria-selected={i === stageIndex}
+                className={[
+                  styles.railItem,
+                  styles.railSub,
+                  i === stageIndex ? styles.current : '',
+                  i < stageIndex ? styles.done : '',
+                ].filter(Boolean).join(' ')}
+                onClick={() => onJump(i)}
+                data-testid={`demo-stage-${s.stage}`}
+              >
+                <span className={styles.dot} aria-hidden="true" />
+                {STAGE_LABEL[s.stage]}
+              </button>
+            </span>
+          );
+        }
+
+        return (
+          <button
+            key={s.stage}
+            type="button"
+            role="tab"
+            aria-selected={i === stageIndex}
+            className={[
+              styles.railItem,
+              i === stageIndex ? styles.current : '',
+              i < stageIndex ? styles.done : '',
+            ].filter(Boolean).join(' ')}
+            onClick={() => onJump(i)}
+            data-testid={`demo-stage-${s.stage}`}
+          >
+            <span className={styles.dot} aria-hidden="true" />
+            {STAGE_LABEL[s.stage]}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ---- Sub-box list (input stages) ----
+
+import type { ComponentContribution } from '../data/demoScenariosExpanded';
+
+interface SubBoxListProps {
+  comp: ComponentContribution;
+}
+
+function SubBoxList({ comp }: SubBoxListProps) {
+  return (
+    <div className={styles.subBoxList}>
+      {comp.subBoxes.map((sb) => (
+        <div
+          key={sb.box}
+          className={[styles.subBoxItem, sb.relevant ? styles.subBoxRelevant : styles.subBoxDim].join(' ')}
+        >
+          <span className={styles.subBoxDot} aria-hidden="true" />
+          <div className={styles.subBoxContent}>
+            <span className={styles.subBoxName}>{sb.box}</span>
+            {sb.relevant ? (
+              <span className={styles.subBoxContrib}>{sb.contributed}</span>
+            ) : (
+              <span className={styles.subBoxNotUsed}>not used for this question</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---- Resolve row ----
+
+function ResolveRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className={styles.resolveRow}>
+      <span className={styles.resolveLabel}>{label}</span>
+      <span className={styles.resolveValue}>{value}</span>
+    </div>
+  );
+}
+
+// ---- Icons ----
 
 function PrevIcon() {
   return (

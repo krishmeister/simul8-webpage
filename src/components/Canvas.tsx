@@ -27,6 +27,7 @@ interface Props {
   showCalibration: boolean;
   activeNodeIds: Set<string>;
   activeArrowIds: Set<string>;
+  dimmedNodeIds: Set<string>;
   onSelect: (id: string) => void;
   onClear: () => void;
   onToggleCalibration: () => void;
@@ -132,6 +133,7 @@ export default function Canvas(props: Props) {
                 demo={props.demoMode}
                 active={props.activeNodeIds.has(n.id)}
                 selected={props.selectedId === n.id}
+                demoDimmed={props.dimmedNodeIds.has(n.id)}
                 onSelect={props.onSelect}
               />
             ))}

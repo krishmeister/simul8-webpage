@@ -133,6 +133,14 @@ export default function App() {
           }
         }
       }
+      // Resolve stage: additionally light calibration arrows between the highlighted nodes.
+      if (stage.showCalibrationArrows) {
+        for (const a of arrows) {
+          if (a.type === 'calibration' && cur.has(a.from) && cur.has(a.to)) {
+            activeArrows.add(a.id);
+          }
+        }
+      }
       return { activeNodeIds: activeNodes, activeArrowIds: activeArrows };
     }
 
@@ -174,6 +182,18 @@ export default function App() {
     return { activeNodeIds: activeNodes, activeArrowIds: activeArrows };
   }, [selectedId, calibrationMode, demoPhase, demoStage, demoScenario]);
 
+  // Which nodes should render greyed/"not used" (deliberate demo dimming, separate from focus-mode dim).
+  const dimmedNodeIds = useMemo(() => {
+    const s = new Set<string>();
+    if (demoPhase === 'playing' && demoScenario) {
+      const stage = demoScenario.flow[demoStage];
+      if (stage.dimNodeIds) {
+        for (const id of mapDemoNodeIds(stage.dimNodeIds)) s.add(id);
+      }
+    }
+    return s;
+  }, [demoPhase, demoStage, demoScenario]);
+
   const demoMode = demoPhase === 'playing';
   const demoOutputOpen = demoMode && demoScenario?.flow[demoStage]?.stage === 'output';
   const focusMode = calibrationMode || selectedId !== null || demoMode;
@@ -196,6 +216,7 @@ export default function App() {
         showCalibration={demoPhase === 'off'}
         activeNodeIds={activeNodeIds}
         activeArrowIds={activeArrowIds}
+        dimmedNodeIds={dimmedNodeIds}
         onSelect={select}
         onClear={clearSelection}
         onToggleCalibration={toggleCalibration}
@@ -223,6 +244,7 @@ export default function App() {
           onBack={demoPrev}
           onReplay={demoReplay}
           onExit={exitDemo}
+          onNext={demoNext}
         />
       )}
     </div>

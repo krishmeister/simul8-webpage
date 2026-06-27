@@ -8,12 +8,16 @@ interface Props {
   active: boolean;
   selected: boolean;
   demo?: boolean;
+  demoDimmed?: boolean;
   onSelect: (id: string) => void;
 }
 
-function NodeView({ node, focusMode, active, selected, demo, onSelect }: Props) {
+function NodeView({ node, focusMode, active, selected, demo, demoDimmed, onSelect }: Props) {
   const interactive = node.interactive !== false;
-  const dim = focusMode && !active;
+  // demoDimmed is a deliberate "not used for this question" treatment — distinct from
+  // standard focus-mode dimming. A demoDimmed node should not also receive the focus-mode
+  // dim class (which would compete at a different opacity).
+  const dim = focusMode && !active && !demoDimmed;
   // group selectors (header / ensemble container) light up as part of the group,
   // never with the single-select z-lift that would cover the cards they enclose.
   const isSelected = selected && !node.groupSelect;
@@ -26,6 +30,7 @@ function NodeView({ node, focusMode, active, selected, demo, onSelect }: Props) 
     active && !isSelected ? styles.active : '',
     demo && active ? styles.demoLit : '',
     dim ? styles.dim : '',
+    demoDimmed ? styles.demoDimmed : '',
     interactive ? '' : styles.nonInteractive,
   ]
     .filter(Boolean)
@@ -60,12 +65,12 @@ function NodeView({ node, focusMode, active, selected, demo, onSelect }: Props) 
       aria-pressed={interactive ? selected : undefined}
       aria-label={node.title || undefined}
     >
-      <NodeBody node={node} />
+      <NodeBody node={node} demoDimmed={demoDimmed} />
     </div>
   );
 }
 
-function NodeBody({ node }: { node: DiagramNode }) {
+function NodeBody({ node, demoDimmed }: { node: DiagramNode; demoDimmed?: boolean }) {
   switch (node.variant) {
     case 'title':
       return (
@@ -125,6 +130,7 @@ function NodeBody({ node }: { node: DiagramNode }) {
           <span className={styles.sourceTitle}>{node.title}</span>
           {node.subtitle && <span className={styles.sourceSub}>{node.subtitle}</span>}
           {node.ai && <span className={styles.sourceAi}>AI · LLM</span>}
+          {demoDimmed && <span className={styles.notUsed}>not used</span>}
         </div>
       );
 
