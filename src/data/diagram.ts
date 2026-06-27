@@ -496,7 +496,6 @@ export const nodes: DiagramNode[] = [
     color: 'pink',
     title: 'Supervised ML',
     subtitle: 'scores entities by traits — churn, LTV',
-    tag: 'XGBoost',
     tools: 'XGBoost · LightGBM',
     fullDescription:
       'Scores individual entities by their traits — for example churn risk or lifetime value — using gradient-boosted trees (XGBoost). The workhorse for per-entity classification and ranking inside the ensemble.',
