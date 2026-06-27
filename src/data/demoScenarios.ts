@@ -2,117 +2,188 @@
 // Simul8 — "See it in action" demo scenarios
 // ----------------------------------------------------------------------------
 // Four pre-written, illustrative walkthroughs. Each one scripts how a real
-// operator question flows through the architecture — input -> orchestrator ->
-// engines -> fusion -> output — and what each stage produces.
-//
-// IMPORTANT: these are ILLUSTRATIVE. The numbers model what the FINISHED
-// product would return, and they obey Simul8's own discipline: never a bare
-// number — always a range, a confidence, and a maturity label. The journey
-// shows which engines agreed and which diverged, because that honesty IS the
-// product.
-//
-// All company and operator names are fictional.
+// operator question flows through the architecture — input (four sub-stepped
+// components) -> orchestrator -> engines -> fusion -> output -> resolve (the
+// calibration loop closes). All company and operator names are fictional.
 // ============================================================================
 
+import type { ComponentContribution } from './demoScenariosExpanded';
+import { DEMO_INPUT_DETAIL, DEMO_CLOSING_STAGES } from './demoScenariosExpanded';
+
 export type StageId =
-  | "input"            // pulling the relevant slice of input data
-  | "accumulate"       // Accumulated User Input Data
-  | "subtaskA"         // intent parsing (LLM)
-  | "subtaskB"         // method selection (calibration-routed)
-  | "engines"          // the engine ensemble fires
-  | "fusion"           // multi-method fusion + calibration
-  | "output";          // the four-layer output
+  | "input-external"    // External Data sub-step
+  | "input-category"    // Category Data sub-step
+  | "input-product"     // Product Data sub-step
+  | "input-linking"     // Data Linking sub-step
+  | "accumulate"        // Accumulated User Input Data
+  | "subtaskA"          // intent parsing (LLM)
+  | "subtaskB"          // method selection (calibration-routed)
+  | "engines"           // the engine ensemble fires
+  | "fusion"            // multi-method fusion + calibration
+  | "output"            // the four-layer output
+  | "resolve";          // calibration loop closes (the Vault)
 
 export interface FlowStage {
   stage: StageId;
   // The node ids in the diagram this stage should highlight while it's active.
   highlightNodeIds: string[];
+  // Nodes to render greyed/dimmed ("not used for this question").
+  dimNodeIds?: string[];
+  // If true, light calibration arrows between the highlighted nodes (resolve stage).
+  showCalibrationArrows?: boolean;
+  // Sub-box detail for input component sub-steps.
+  inputComponentDetail?: ComponentContribution;
+  // Predicted-vs-actual data for the resolve stage.
+  resolvedOutcome?: {
+    predicted: string;
+    actual: string;
+    gap: string;
+    update: string;
+  };
   // Short caption shown during the animation for this stage.
   caption: string;
-  // The longer "what happened here" text the user reads when they click this stage.
+  // The longer "what happened here" text the user reads.
   detail: string;
 }
 
 export interface EngineContribution {
-  engine: string;          // engine name
-  fired: boolean;          // did Sub-task B fire it for this question?
-  weight?: number;         // 0-100, only if fired
-  verdict?: string;        // what this engine concluded
+  engine: string;
+  fired: boolean;
+  weight?: number;
+  verdict?: string;
   agreement?: "agrees" | "diverges" | "neutral";
 }
 
 export interface OutputLayer {
-  // Layer 1 — Outcome
   outcome: {
-    headline: string;      // e.g. "+18% units, most likely"
-    range: string;         // credible range
-    confidence: string;    // e.g. "71% — moderate"
-    maturity: string;      // e.g. "Developing"
-    plain: string;         // one-line plain reading
+    headline: string;
+    range: string;
+    confidence: string;
+    maturity: string;
+    plain: string;
   };
-  // Layer 2 — Journey (the reasoning)
   journey: {
     engines: EngineContribution[];
-    causalChain: string[]; // the A-to-Z chain, e.g. ["price -15%","demand +X","..."]
-    narrative: string;     // why the answer is what it is, incl. the disagreement
-    evidence: string[];    // evidence tags that drove confidence
+    causalChain: string[];
+    narrative: string;
+    evidence: string[];
   };
-  // Layer 3 — Interrogate & Adjust
   interrogate: {
-    prompt: string;        // an example "what if" the user could ask
-    adjustedResult: string;// what changes if they adjust the lever
-    note: string;          // the cheap-vs-expensive recompute note
+    prompt: string;
+    adjustedResult: string;
+    note: string;
   };
-  // Layer 4 — Share
   share: {
-    summary: string;       // the one-paragraph export summary
-    formats: string[];     // ["PDF report","Slide deck","Image"]
+    summary: string;
+    formats: string[];
   };
 }
 
 export interface Scenario {
   id: string;
   company: string;
-  operator: string;        // the person asking
-  persona: string;         // one-line who they are
-  category: string;        // for the tag/icon
-  question: string;        // the actual question they ask
-  whyTheseEngines: string; // one-line on the routing logic
+  operator: string;
+  persona: string;
+  category: string;
+  question: string;
+  whyTheseEngines: string;
   flow: FlowStage[];
   output: OutputLayer;
 }
 
 // ----------------------------------------------------------------------------
-// Shared flow skeleton. The captions/details differ per scenario, but the
-// stage order and the nodes each stage lights up are the same architecture.
-// (Node ids below are placeholders — Claude Code should map them to the real
-//  ids in src/data/diagram.ts. Names are given so the mapping is unambiguous.)
+// Sub-box name → real diagram node ID (used when building input sub-steps).
+// Verified against src/data/diagram.ts.
 // ----------------------------------------------------------------------------
+const SUB_BOX_NODE: Record<string, string> = {
+  'Public authoritative':    'src-ext-1',
+  'Economic activity':       'src-ext-2',
+  'Prediction markets':      'src-ext-3',
+  'Licensed feeds':          'src-ext-4',
+  'Expert panel':            'src-cat-1',
+  'Helium-ish tool':         'src-cat-2',
+  'Validated research':      'src-cat-3',
+  'Competitive structure':   'src-cat-4',
+  'Commerce & transactions': 'src-prod-1',
+  'Marketing & acquisition': 'src-prod-2',
+  'Operations & supply':     'src-prod-3',
+  'AI interview':            'src-prod-4',
+  'Fuses the three sources': 'src-link-1',
+  'Pre-built recipe':        'src-link-2',
+  'Applied live':            'src-link-3',
+};
 
+const COMPONENT_PANEL: Record<string, string> = {
+  External: 'panel-external',
+  Category: 'panel-category',
+  Product:  'panel-product',
+  Linking:  'panel-linking',
+};
+
+const COMPONENT_CAPTION: Record<string, string> = {
+  External: 'Reading the external backdrop…',
+  Category: 'Pulling category priors…',
+  Product:  "Reading the operator's own data…",
+  Linking:  'Fusing into one query-time picture…',
+};
+
+function buildInputStages(scenarioId: string): FlowStage[] {
+  const detail = DEMO_INPUT_DETAIL.find((d) => d.scenarioId === scenarioId);
+  if (!detail) return [];
+  return detail.components.map((comp) => {
+    const panelId = COMPONENT_PANEL[comp.component];
+    const relevantIds = comp.subBoxes
+      .filter((sb) => sb.relevant)
+      .map((sb) => SUB_BOX_NODE[sb.box])
+      .filter(Boolean);
+    const dimIds = comp.subBoxes
+      .filter((sb) => !sb.relevant)
+      .map((sb) => SUB_BOX_NODE[sb.box])
+      .filter(Boolean);
+    return {
+      stage: `input-${comp.component.toLowerCase()}` as StageId,
+      highlightNodeIds: [panelId, ...relevantIds],
+      dimNodeIds: dimIds.length > 0 ? dimIds : undefined,
+      inputComponentDetail: comp,
+      caption: COMPONENT_CAPTION[comp.component],
+      detail: comp.summary,
+    };
+  });
+}
+
+function buildResolveStage(scenarioId: string): FlowStage {
+  const cs = DEMO_CLOSING_STAGES.find((s) => s.scenarioId === scenarioId);
+  if (!cs) throw new Error(`No closing stage for scenarioId "${scenarioId}"`);
+  return {
+    stage: 'resolve',
+    highlightNodeIds: cs.highlightNodeIds,
+    showCalibrationArrows: true,
+    resolvedOutcome: cs.resolved,
+    caption: cs.caption,
+    detail: cs.detail,
+  };
+}
+
+// ----------------------------------------------------------------------------
+// Shared node placeholder map (kept for the non-input stages).
+// ----------------------------------------------------------------------------
 const NODE = {
-  external: "external-data",
-  category: "category-data",
-  product: "product-data",
-  linking: "data-linking",
-  accumulate: "accumulated-input",
-  subtaskA: "subtask-a",
-  askUser: "ask-user",
-  subtaskB: "subtask-b",
-  engineGroup: "engine-group",
-  timeseries: "engine-timeseries",
-  bayesian: "engine-bayesian",
-  causal: "engine-causal",
-  abm: "engine-abm",
-  systemdynamics: "engine-systemdynamics",
-  supervised: "engine-supervised",
-  fusion: "fusion",
-  output: "output",
-  log: "vault-log",
-  calibration: "vault-calibration",
+  accumulate: 'accumulated',
+  subtaskA: 'subtask-a',
+  subtaskB: 'subtask-b',
+  engineGroup: 'engine-group',
+  timeseries: 'eng-timeseries',
+  bayesian: 'eng-bayesian',
+  causal: 'eng-causal',
+  abm: 'eng-abm',
+  systemdynamics: 'eng-sysdyn',
+  supervised: 'eng-supervised',
+  fusion: 'fusion',
+  output: 'output',
 } as const;
 
 // ============================================================================
-// SCENARIO 1 — Gen-Z oversized T-shirts
+// SCENARIO 1 — Gen-Z oversized T-shirts (Loudmouth Co.)
 // ============================================================================
 
 const scenario1: Scenario = {
@@ -126,19 +197,13 @@ const scenario1: Scenario = {
   whyTheseEngines:
     "A festive demand-plus-price-cut question — Time-Series for the Diwali baseline, Causal for the price-cut effect, Bayesian to calibrate, ABM for the Gen-Z social cascade.",
   flow: [
-    {
-      stage: "input",
-      highlightNodeIds: [NODE.external, NODE.category, NODE.product, NODE.linking],
-      caption: "Pulling the relevant data…",
-      detail:
-        "The system pulls only the slice this question needs. External: the Diwali festive calendar and apparel seasonality. Category: validated price-elasticity priors for Gen-Z streetwear, plus cohort data from comparable Indian apparel operators. Product: Loudmouth's own Shopify history — past prices, conversion, and what happened in last year's festive window. Data Linking fuses the three into one query-time picture.",
-    },
+    ...buildInputStages("tees"),
     {
       stage: "accumulate",
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Loudmouth's relevant data is merged with Riya's intent: she wants a *unit-sales forecast* for a *15% price cut* over the *Diwali window*. That's the structured starting point.",
+        "Loudmouth's relevant data is merged with Riya's intent: she wants a unit-sales forecast for a 15% price cut over the Diwali window. That's the structured starting point.",
     },
     {
       stage: "subtaskA",
@@ -156,13 +221,7 @@ const scenario1: Scenario = {
     },
     {
       stage: "engines",
-      highlightNodeIds: [
-        NODE.engineGroup,
-        NODE.timeseries,
-        NODE.bayesian,
-        NODE.causal,
-        NODE.abm,
-      ],
+      highlightNodeIds: [NODE.engineGroup, NODE.timeseries, NODE.bayesian, NODE.causal, NODE.abm],
       caption: "The engines run…",
       detail:
         "Time-Series projects the Diwali baseline (what units would sell at current price). Causal models the price-cut effect through the elasticity chain. Bayesian wraps it in a calibrated uncertainty band. ABM simulates the social cascade — Gen-Z buyers reacting to each other and to a discount during a high-attention window. Each produces its own answer.",
@@ -181,6 +240,7 @@ const scenario1: Scenario = {
       detail:
         "The result is delivered as a scenario space, not a bare number — the outcome, the full reasoning journey, an interactive panel to test other price points, and an export. Click through the four output tabs to see each.",
     },
+    buildResolveStage("tees"),
   ],
   output: {
     outcome: {
@@ -233,7 +293,7 @@ const scenario1: Scenario = {
 };
 
 // ============================================================================
-// SCENARIO 2 — Protein / supplements
+// SCENARIO 2 — Protein / supplements (Macrofuel)
 // ============================================================================
 
 const scenario2: Scenario = {
@@ -247,26 +307,20 @@ const scenario2: Scenario = {
   whyTheseEngines:
     "A channel-reallocation question on a subscription business — Causal for the channel-substitution effect, Time-Series for the trend, Bayesian to calibrate, Supervised ML to score subscriber quality.",
   flow: [
-    {
-      stage: "input",
-      highlightNodeIds: [NODE.external, NODE.category, NODE.product, NODE.linking],
-      caption: "Pulling the relevant data…",
-      detail:
-        "External: nothing seasonal needed here. Category: validated channel-substitution priors and CAC benchmarks for D2C supplements. Product: Macrofuel's Meta and Google Ads performance (ROAS, CAC by channel), plus its subscription retention curve from Razorpay. Linking fuses them.",
-    },
+    ...buildInputStages("protein"),
     {
       stage: "accumulate",
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Macrofuel's channel data merges with Arjun's intent: he wants the effect on *new-subscriber acquisition* of moving *₹3L from Meta to Google* over *next quarter*.",
+        "Macrofuel's channel data merges with Arjun's intent: he wants the effect on new-subscriber acquisition of moving ₹3L from Meta to Google over next quarter.",
     },
     {
       stage: "subtaskA",
       highlightNodeIds: [NODE.subtaskA],
       caption: "Understanding the question (LLM)…",
       detail:
-        "Sub-task A structures it: question-type = intervention on channel mix; decision variable = ₹3L Meta→Google; metric = new subscribers; horizon = one quarter. It also flags a sub-question worth surfacing — subscriber *quality* differs by channel — and notes Macrofuel's data covers it, so no clarification needed.",
+        "Sub-task A structures it: question-type = intervention on channel mix; decision variable = ₹3L Meta→Google; metric = new subscribers; horizon = one quarter. It also flags a sub-question worth surfacing — subscriber quality differs by channel — and notes Macrofuel's data covers it, so no clarification needed.",
     },
     {
       stage: "subtaskB",
@@ -277,23 +331,17 @@ const scenario2: Scenario = {
     },
     {
       stage: "engines",
-      highlightNodeIds: [
-        NODE.engineGroup,
-        NODE.timeseries,
-        NODE.bayesian,
-        NODE.causal,
-        NODE.supervised,
-      ],
+      highlightNodeIds: [NODE.engineGroup, NODE.timeseries, NODE.bayesian, NODE.causal, NODE.supervised],
       caption: "The engines run…",
       detail:
-        "Causal models how moving spend changes acquisition through each channel's CAC and saturation. Supervised ML scores the *quality* gap — Google-acquired subscribers historically retain longer for Macrofuel. Time-Series projects the underlying acquisition trend; Bayesian calibrates the band.",
+        "Causal models how moving spend changes acquisition through each channel's CAC and saturation. Supervised ML scores the quality gap — Google-acquired subscribers historically retain longer for Macrofuel. Time-Series projects the underlying acquisition trend; Bayesian calibrates the band.",
     },
     {
       stage: "fusion",
       highlightNodeIds: [NODE.fusion],
       caption: "Combining into one honest answer…",
       detail:
-        "The engines mostly agree on raw new-subscriber count, but Supervised ML adds a twist Fusion surfaces prominently: slightly *fewer* raw new subscribers, but *higher-retaining* ones. Fusion delivers both signals rather than collapsing them into one misleading number — the honest answer has two parts.",
+        "The engines mostly agree on raw new-subscriber count, but Supervised ML adds a twist Fusion surfaces prominently: slightly fewer raw new subscribers, but higher-retaining ones. Fusion delivers both signals rather than collapsing them into one misleading number — the honest answer has two parts.",
     },
     {
       stage: "output",
@@ -302,6 +350,7 @@ const scenario2: Scenario = {
       detail:
         "Delivered as a scenario space with the quality-vs-quantity nuance front and centre. Click the four output tabs to see each.",
     },
+    buildResolveStage("protein"),
   ],
   output: {
     outcome: {
@@ -353,7 +402,7 @@ const scenario2: Scenario = {
 };
 
 // ============================================================================
-// SCENARIO 3 — Sneakers
+// SCENARIO 3 — Sneakers (Aksh Footwear)
 // ============================================================================
 
 const scenario3: Scenario = {
@@ -367,19 +416,13 @@ const scenario3: Scenario = {
   whyTheseEngines:
     "A bundle-launch question with hype dynamics — ABM for the drop frenzy, Causal for the bundle effect, Time-Series for the drop baseline, Bayesian to calibrate.",
   flow: [
-    {
-      stage: "input",
-      highlightNodeIds: [NODE.external, NODE.category, NODE.product, NODE.linking],
-      caption: "Pulling the relevant data…",
-      detail:
-        "External: launch-timing and attention data. Category: bundle-economics and decoy-pricing research, plus cohort data on hype-drop sell-through for Indian sneaker brands. Product: Aksh's past drop performance — how fast previous drops sold out, AOV, returns. Linking fuses them.",
-    },
+    ...buildInputStages("sneakers"),
     {
       stage: "accumulate",
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Aksh's drop history merges with Devika's intent: compare *bundle at −10%* vs *separate* on two metrics — *total revenue* and *sell-through speed* — for the next limited drop.",
+        "Aksh's drop history merges with Devika's intent: compare bundle at −10% vs separate on two metrics — total revenue and sell-through speed — for the next limited drop.",
     },
     {
       stage: "subtaskA",
@@ -397,13 +440,7 @@ const scenario3: Scenario = {
     },
     {
       stage: "engines",
-      highlightNodeIds: [
-        NODE.engineGroup,
-        NODE.timeseries,
-        NODE.bayesian,
-        NODE.causal,
-        NODE.abm,
-      ],
+      highlightNodeIds: [NODE.engineGroup, NODE.timeseries, NODE.bayesian, NODE.causal, NODE.abm],
       caption: "The engines run…",
       detail:
         "ABM simulates the drop frenzy — limited stock plus hype creates a fast sell-through cascade, and it tests whether bundling changes the frenzy. Causal models the bundle's effect on AOV and total revenue. Time-Series sets the baseline drop curve; Bayesian calibrates.",
@@ -413,7 +450,7 @@ const scenario3: Scenario = {
       highlightNodeIds: [NODE.fusion],
       caption: "Combining into one honest answer…",
       detail:
-        "Here the engines genuinely split. Causal says the bundle lifts revenue via higher AOV. ABM warns the bundle could *slow* the pure-sneaker frenzy slightly — hype buyers want the sneaker, not socks — trading a touch of sell-through speed for AOV. Fusion surfaces this tension openly, so confidence is moderate and the answer is a real trade-off, not a clean win.",
+        "Here the engines genuinely split. Causal says the bundle lifts revenue via higher AOV. ABM warns the bundle could slow the pure-sneaker frenzy slightly — hype buyers want the sneaker, not socks — trading a touch of sell-through speed for AOV. Fusion surfaces this tension openly, so confidence is moderate and the answer is a real trade-off, not a clean win.",
     },
     {
       stage: "output",
@@ -422,6 +459,7 @@ const scenario3: Scenario = {
       detail:
         "Delivered as a scenario space framing the revenue-vs-speed trade-off. Click the four output tabs to see each.",
     },
+    buildResolveStage("sneakers"),
   ],
   output: {
     outcome: {
@@ -472,7 +510,7 @@ const scenario3: Scenario = {
 };
 
 // ============================================================================
-// SCENARIO 4 — TWS / electronics
+// SCENARIO 4 — TWS / electronics (Pulsebeat Audio)
 // ============================================================================
 
 const scenario4: Scenario = {
@@ -486,19 +524,13 @@ const scenario4: Scenario = {
   whyTheseEngines:
     "A price-increase question with a competitive response and an inventory constraint — Causal for the price effect, ABM for competitor reaction, System Dynamics for the inventory/feedback dynamics, Bayesian to calibrate.",
   flow: [
-    {
-      stage: "input",
-      highlightNodeIds: [NODE.external, NODE.category, NODE.product, NODE.linking],
-      caption: "Pulling the relevant data…",
-      detail:
-        "External: nothing seasonal critical. Category: price-elasticity for value TWS, plus competitive-structure data on rival pricing and promo patterns (from cohort + ad-library signals). Product: Pulsebeat's sales history, current inventory and reorder lead times (from the AI interview — true cost and stock data the APIs don't expose), and Amazon + own-store performance. Linking fuses them.",
-    },
+    ...buildInputStages("tws"),
     {
       stage: "accumulate",
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Pulsebeat's data merges with Kabir's intent and his two constraints: he wants the *revenue effect* of *+₹500 (20%)* over *a quarter*, explicitly accounting for *inventory limits* and a *likely competitor discount*.",
+        "Pulsebeat's data merges with Kabir's intent and his two constraints: he wants the revenue effect of +₹500 (20%) over a quarter, explicitly accounting for inventory limits and a likely competitor discount.",
     },
     {
       stage: "subtaskA",
@@ -516,13 +548,7 @@ const scenario4: Scenario = {
     },
     {
       stage: "engines",
-      highlightNodeIds: [
-        NODE.engineGroup,
-        NODE.bayesian,
-        NODE.causal,
-        NODE.abm,
-        NODE.systemdynamics,
-      ],
+      highlightNodeIds: [NODE.engineGroup, NODE.bayesian, NODE.causal, NODE.abm, NODE.systemdynamics],
       caption: "The engines run…",
       detail:
         "Causal models the demand drop from +20% price. ABM simulates the competitor discounting into the gap and value-buyers switching. System Dynamics tracks whether inventory and reorder timing can even meet demand at the new price — and whether a stockout interacts with the competitor's move. Bayesian calibrates the whole thing.",
@@ -541,6 +567,7 @@ const scenario4: Scenario = {
       detail:
         "Delivered as a scenario space with the competitor risk and inventory upside both visible. Click the four output tabs to see each.",
     },
+    buildResolveStage("tws"),
   ],
   output: {
     outcome: {
