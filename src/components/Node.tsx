@@ -156,7 +156,12 @@ function NodeBody({ node }: { node: DiagramNode }) {
             {node.tag && <span className={styles.tag}>{node.tag}</span>}
           </div>
           {node.subtitle && <span className={styles.boxSub}>{node.subtitle}</span>}
-          {node.badge && <span className={styles.badge}>{node.badge}</span>}
+          {(node.badge || node.tools) && (
+            <div className={styles.engineFoot}>
+              {node.badge && <span className={styles.badge}>{node.badge}</span>}
+              {node.tools && <span className={styles.tools}>{node.tools}</span>}
+            </div>
+          )}
         </div>
       );
 
