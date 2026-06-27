@@ -47,7 +47,7 @@ export default function DetailPanel({ node, calibrationMode, onClose }: Props) {
             <span className={styles.kicker}>The hero interaction</span>
             <h2 className={styles.title}>The Calibration Loop</h2>
             <p className={styles.lede}>
-              This is how Simul8 earns trust instead of asserting it. Five connectors form a closed
+              This is how Simul8 earns trust instead of asserting it. Seven connectors form a closed
               learning loop — highlighted on the canvas now.
             </p>
             <ul className={styles.loopList}>
@@ -55,7 +55,9 @@ export default function DetailPanel({ node, calibrationMode, onClose }: Props) {
               <li><b>Calibration → Fusion</b> — tells the chairperson how to weight each engine.</li>
               <li><b>Method Selection → The Log</b> — writes its routing decision.</li>
               <li><b>Fusion → The Log</b> — writes its weighting decision.</li>
-              <li><b>Output → The Log</b> — writes the resolved prediction, closing the loop.</li>
+              <li><b>Output → The Log</b> — logs the resolved outcome.</li>
+              <li><b>Output → Calibration</b> — feeds the resolved outcome in directly.</li>
+              <li><b>The Log → Calibration</b> — calibration reads the record to grade it.</li>
             </ul>
             <p className={styles.foot}>
               Calibration then compares predicted vs. actual, regrades accuracy and honesty, and

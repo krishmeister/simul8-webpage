@@ -691,7 +691,7 @@ export const arrows: DiagramArrow[] = [
     label: 'tells Fusion how to weight',
     labelPos: { x: 1916, y: 1398 },
   },
-  // Sub-task B -> The Log : down the left channel, along the bottom band, up the inner right gutter.
+  // Sub-task B -> The Log : down the left channel, along the bottom band, up a right gutter.
   {
     id: 'c-b-log',
     from: 'subtask-b',
@@ -705,11 +705,11 @@ export const arrows: DiagramArrow[] = [
     via: [
       { x: 866, y: 1152 },
       { x: 866, y: 1405 },
-      { x: 2235, y: 1405 },
-      { x: 2235, y: 1110 },
+      { x: 2244, y: 1405 },
+      { x: 2244, y: 1112 },
     ],
   },
-  // Fusion -> The Log : up the middle right gutter.
+  // Fusion -> The Log : up a right gutter.
   {
     id: 'c-fusion-log',
     from: 'fusion',
@@ -723,11 +723,11 @@ export const arrows: DiagramArrow[] = [
     labelPos: { x: 2150, y: 1366 },
     labelAnchor: 'end',
     via: [
-      { x: 2260, y: 1432 },
-      { x: 2260, y: 1074 },
+      { x: 2266, y: 1432 },
+      { x: 2266, y: 1074 },
     ],
   },
-  // Output -> The Vault : up the outer right gutter (closes the calibration loop).
+  // Output -> The Log : logs the outcome to the append-only record (outer right gutter).
   {
     id: 'c-out-log',
     from: 'output',
@@ -736,14 +736,45 @@ export const arrows: DiagramArrow[] = [
     fromSide: 'top',
     toSide: 'right',
     fromOffset: 0.97,
-    toOffset: 0.35,
-    label: 'writes resolved outcome — closes the loop',
-    labelPos: { x: 2150, y: 1606 },
+    toOffset: 0.39,
+    label: 'logs the outcome',
+    labelPos: { x: 2150, y: 1612 },
     labelAnchor: 'end',
     via: [
-      { x: 2285, y: 1632 },
-      { x: 2285, y: 1030 },
+      { x: 2288, y: 1632 },
+      { x: 2288, y: 1036 },
     ],
+  },
+  // Output -> Calibration : the resolved outcome also feeds calibration directly (inner gutter).
+  {
+    id: 'c-out-cal',
+    from: 'output',
+    to: 'vault-calibration',
+    type: 'calibration',
+    fromSide: 'top',
+    toSide: 'right',
+    fromOffset: 0.93,
+    toOffset: 0.73,
+    label: 'writes resolved outcome',
+    labelPos: { x: 1900, y: 1612 },
+    labelAnchor: 'end',
+    via: [
+      { x: 2222, y: 1632 },
+      { x: 2222, y: 1300 },
+    ],
+  },
+  // The Log -> Calibration : calibration reads the append-only record to grade it (internal).
+  {
+    id: 'c-log-cal',
+    from: 'vault-log',
+    to: 'vault-calibration',
+    type: 'calibration',
+    fromSide: 'bottom',
+    toSide: 'top',
+    fromOffset: 0.5,
+    toOffset: 0.5,
+    label: 'reads the record',
+    labelPos: { x: 2090, y: 1150 },
   },
 ];
 
