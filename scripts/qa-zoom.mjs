@@ -28,6 +28,14 @@ await settle(page, 1000);
 await shot(page, 'z1-full-dark');
 // top section: title formatting + Geography bridge
 await shot(page, 'z8-top-section', clipL(560, 20, 1180, 320));
+// engine ensemble container (resting)
+await shot(page, 'z15-ensemble-resting', clipL(840, 860, 850, 540));
+// engine group selection
+await page.getByRole('button', { name: 'Prediction & Simulation Engine', exact: true }).click();
+await settle(page);
+await shot(page, 'z16-ensemble-group', clipL(840, 860, 850, 540));
+await page.keyboard.press('Escape');
+await settle(page);
 // orchestrator: listening overlay band + corpus
 await shot(page, 'z9-orchestrator', clipL(60, 860, 850, 600));
 // engines: tools lines, no AI tag
@@ -41,10 +49,10 @@ await shot(page, 'z11-fusion', clipL(80, 1430, 2140, 175));
 await page.getByTestId('calib-toggle').click();
 await settle(page);
 await shot(page, 'z2-calibration-full');
-// close-up of the loop labels clustering bottom-right + Output->Vault riser
+// close-up of the loop labels clustering bottom-right + Output risers
 await shot(page, 'z13-loop-labels', clipL(1050, 1340, 1250, 360));
-// close-up of the Output->Vault closing arrow + label
-await shot(page, 'z14-out-close', clipL(1600, 1540, 700, 200));
+// the Vault: 4 risers into Log/Calibration + internal Log->Calibration arrow
+await shot(page, 'z14-vault-arrows', clipL(1640, 940, 700, 480));
 
 await page.keyboard.press('Escape');
 await settle(page);

@@ -51,6 +51,18 @@ const browser = await chromium.launch();
   await settle(page);
   await shot(page, '06-desktop-esc-from-calib');
 
+  // engine ensemble: group selection (click the header) vs single engine
+  await page.getByRole('button', { name: 'Prediction & Simulation Engine', exact: true }).click();
+  await settle(page);
+  await shot(page, '13-desktop-engine-group');
+  await page.keyboard.press('Escape');
+  await settle(page);
+  await page.getByRole('button', { name: 'System Dynamics' }).click();
+  await settle(page);
+  await shot(page, '14-desktop-engine-single');
+  await page.keyboard.press('Escape');
+  await settle(page);
+
   // The Bible slide-over
   await page.getByTestId('bible-open').click();
   await settle(page, 900);

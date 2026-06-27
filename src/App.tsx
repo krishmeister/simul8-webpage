@@ -51,8 +51,11 @@ export default function App() {
     const activeNodes = new Set<string>();
     const activeArrows = new Set<string>();
     const lightArrowsTouchingActiveNodes = () => {
+      // snapshot the seed members so adding endpoints mid-pass can't cascade
+      // (otherwise lighting fusion/subB would drag in the whole calibration loop)
+      const seed = new Set(activeNodes);
       for (const a of arrows) {
-        if (activeNodes.has(a.from) || activeNodes.has(a.to)) {
+        if (seed.has(a.from) || seed.has(a.to)) {
           activeArrows.add(a.id);
           activeNodes.add(a.from);
           activeNodes.add(a.to);
