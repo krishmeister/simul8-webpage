@@ -331,7 +331,7 @@
     bottom: 12px;
     transform: translateX(-50%);
     width: calc(100vw - 20px);
-    max-height: 56vh;
+    max-height: 64vh;
     padding: 13px 14px;
     gap: 10px;
   }
@@ -358,12 +358,16 @@
     justify-content: center;
     font-size: 11.5px;
   }
+  /* Body scrolls within the capped sheet so the resolve panel / sub-box list
+     never overflow behind the transport. Detail stays capped so the rich
+     content below it (intent callout, resolve panel) shows without a long scroll. */
   .body {
-    overflow: visible;
+    overflow-y: auto;
   }
   .detail {
     max-height: 5em;
     overflow-y: auto;
+    flex: none;
   }
   .railGroup {
     display: none;
