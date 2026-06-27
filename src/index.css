@@ -1,0 +1,105 @@
+/* ================================================================== */
+/* Design tokens — dark is the default (in :root); light overrides     */
+/* under [data-theme='light']. Every colour is themed; nothing is      */
+/* hardcoded in components. Per-hue tokens: surface / border /         */
+/* accent (decorative) / strong (text-grade, WCAG-AA on the surface).  */
+/* ================================================================== */
+:root {
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --radius: 16px;
+  --radius-sm: 11px;
+
+  /* ---------- DARK THEME (default) ---------- */
+  --paper: #15141a;
+  --paper-2: #1f1e27;
+  --dot: #2c2a36;
+  --ink: #f3f0ea;
+  --ink-2: #bbb6ad; /* secondary text — ~7:1 on --card */
+  --ink-3: #8b867d; /* decorative only */
+  --card: #232029;
+  --hairline: rgba(255, 255, 255, 0.11);
+
+  --wordmark-bg: #0d0c11;
+  --wordmark-fg: #f4f1ea;
+
+  --shadow-rest: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-hover: 0 16px 38px -12px rgba(0, 0, 0, 0.72);
+
+  --flow: #756f83;
+  --flow-strong: #d3cdda;
+  --calib: #b69bf0;
+  --calib-strong: #d2bcff;
+
+  --blue-surface: #18233b;   --blue-border: #35517f;   --blue-accent: #6fa1f0;   --blue-strong: #cfe0ff;
+  --green-surface: #16291e;  --green-border: #2f5a3f;   --green-accent: #57c489;  --green-strong: #c6f0d7;
+  --amber-surface: #2b2310;  --amber-border: #5a4920;   --amber-accent: #e0a93a;  --amber-strong: #f6dcab;
+  --purple-surface: #211a37; --purple-border: #44386f;  --purple-accent: #a487e6; --purple-strong: #ddccf6;
+  --pink-surface: #2d1622;   --pink-border: #5e2f43;    --pink-accent: #e87fa6;   --pink-strong: #f7cbda;
+  --yellow-surface: #2a2410; --yellow-border: #564920;  --yellow-accent: #d6b23c; --yellow-strong: #f1e4a6;
+  --slate-surface: #1d222a;  --slate-border: #3a434f;   --slate-accent: #93a2b7;  --slate-strong: #ccd5e1;
+  --neutral-surface: #1b1a21;--neutral-border: #34323c; --neutral-accent: #989286;--neutral-strong: #d7d2c7;
+}
+
+[data-theme='light'] {
+  --paper: #f6f4ee;
+  --paper-2: #efece3;
+  --dot: #d9d4c6;
+  --ink: #1b1a17;
+  --ink-2: #4d4a43; /* secondary text — ~8:1 on --card */
+  --ink-3: #6f6a60; /* decorative only — still ~4.6:1 */
+  --card: #fffdf8;
+  --hairline: rgba(27, 26, 23, 0.1);
+
+  --wordmark-bg: #1b1a17;
+  --wordmark-fg: #f6f4ee;
+
+  --shadow-rest: 0 1px 2px rgba(27, 26, 23, 0.05);
+  --shadow-hover: 0 10px 30px -8px rgba(27, 26, 23, 0.22);
+
+  --flow: #a8a294;
+  --flow-strong: #4a463d;
+  --calib: #7a4fd0;
+  --calib-strong: #5b34b0;
+
+  --blue-surface: #eef4ff;   --blue-border: #cadcfb;   --blue-accent: #2f63cf;   --blue-strong: #1e3a8a;
+  --green-surface: #ecfaf1;  --green-border: #c4ecd3;   --green-accent: #1f9d57;  --green-strong: #14532d;
+  --amber-surface: #fff6e7;  --amber-border: #f2dcab;   --amber-accent: #c4810a;  --amber-strong: #7c4a03;
+  --purple-surface: #f3edff; --purple-border: #ddccf6;  --purple-accent: #7a4fd0; --purple-strong: #4c1d95;
+  --pink-surface: #ffeef4;   --pink-border: #f6cad9;    --pink-accent: #cf4d7d;   --pink-strong: #9d174d;
+  --yellow-surface: #fff8d6; --yellow-border: #f0e3a3;  --yellow-accent: #b08900; --yellow-strong: #6d3d10;
+  --slate-surface: #eef0f3;  --slate-border: #d3d9e0;   --slate-accent: #475569;  --slate-strong: #1e293b;
+  --neutral-surface: #f7f5ef;--neutral-border: #e2ddd0; --neutral-accent: #6b6557;--neutral-strong: #3a362e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Keep the diagram canvas from triggering native scroll/zoom on touch. */
+.touch-none {
+  touch-action: none;
+}

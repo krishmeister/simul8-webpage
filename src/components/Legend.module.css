@@ -1,0 +1,75 @@
+.legend {
+  position: fixed;
+  left: 20px;
+  bottom: 22px;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 16px;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  box-shadow: var(--shadow-rest);
+  max-width: 220px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.flowLine {
+  width: 30px;
+  height: 0;
+  border-top: 2px solid var(--flow-strong);
+  flex: none;
+}
+.calibLine {
+  width: 30px;
+  height: 0;
+  border-top: 2.5px dashed var(--calib);
+  flex: none;
+}
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.rule {
+  height: 1px;
+  background: var(--hairline);
+  margin: 2px 0;
+}
+.tints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+.tint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.tint i {
+  width: 11px;
+  height: 11px;
+  border-radius: 4px;
+  flex: none;
+}
+.tint[data-color='blue'] i { background: var(--blue-surface); border: 1px solid var(--blue-accent); }
+.tint[data-color='green'] i { background: var(--green-surface); border: 1px solid var(--green-accent); }
+.tint[data-color='amber'] i { background: var(--amber-surface); border: 1px solid var(--amber-accent); }
+.tint[data-color='purple'] i { background: var(--purple-surface); border: 1px solid var(--purple-accent); }
+.tint[data-color='pink'] i { background: var(--pink-surface); border: 1px solid var(--pink-accent); }
+.tint[data-color='yellow'] i { background: var(--yellow-surface); border: 1px solid var(--yellow-accent); }
+
+/* Keep the canvas clear on small screens. */
+@media (max-width: 900px) {
+  .legend {
+    display: none;
+  }
+}
