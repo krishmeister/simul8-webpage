@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { arrows, nodeById, nodes } from './data/diagram';
 import Canvas from './components/Canvas';
 import DetailPanel from './components/DetailPanel';
+import BiblePanel from './components/BiblePanel';
 import Header from './components/Header';
 import Legend from './components/Legend';
 import styles from './App.module.css';
@@ -9,6 +10,10 @@ import styles from './App.module.css';
 export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [calibrationMode, setCalibrationMode] = useState(false);
+  const [bibleOpen, setBibleOpen] = useState(false);
+
+  const openBible = useCallback(() => setBibleOpen(true), []);
+  const closeBible = useCallback(() => setBibleOpen(false), []);
 
   const select = useCallback((id: string) => {
     setSelectedId((cur) => (cur === id ? null : id));
@@ -27,10 +32,12 @@ export default function App() {
     setCalibrationMode(false);
   }, []);
 
-  // ESC returns to the default, unfocused state in one keypress.
+  // ESC returns to the default, unfocused state in one keypress:
+  // closes the Bible, clears selection, turns off the calibration highlight.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        setBibleOpen(false);
         setSelectedId(null);
         setCalibrationMode(false);
       }
@@ -69,7 +76,7 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      <Header />
+      <Header onOpenBible={openBible} />
       <Canvas
         nodes={nodes}
         arrows={arrows}
@@ -84,6 +91,7 @@ export default function App() {
       />
       <Legend />
       <DetailPanel node={selectedNode} calibrationMode={calibrationMode} onClose={closePanel} />
+      <BiblePanel open={bibleOpen} onClose={closeBible} />
     </div>
   );
 }
