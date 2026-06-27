@@ -67,4 +67,6 @@ export interface DiagramArrow {
   toOffset?: number;
   curve?: number; // multiplier on the bézier handle length
   via?: Point[]; // explicit waypoints -> rounded-corner routed path (used for the calibration loop + the industry bus)
+  labelPos?: Point; // manual label placement (overrides the auto midpoint) — keeps labels off node edges/canvas edge
+  labelAnchor?: 'start' | 'middle' | 'end';
 }

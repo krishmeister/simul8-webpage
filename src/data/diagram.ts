@@ -543,7 +543,7 @@ export const nodes: DiagramNode[] = [
     id: 'fusion',
     variant: 'bar',
     position: { x: 80, y: 1440 },
-    size: { w: 2140, h: 130 },
+    size: { w: 2140, h: 152 },
     color: 'blue',
     title: 'Multi-Method Fusion + Calibration',
     subtitle: "the chairperson — distils the engines into one honest outcome",
@@ -625,7 +625,7 @@ export const arrows: DiagramArrow[] = [
   { id: 'a-a-b', from: 'subtask-a', to: 'subtask-b', type: 'flow', fromSide: 'bottom', toSide: 'top', label: 'if enough' },
 
   // sub-task B -> engine block (dispatch)
-  { id: 'a-b-engines', from: 'subtask-b', to: 'engine-header', type: 'flow', fromSide: 'right', toSide: 'left', label: 'dispatch' },
+  { id: 'a-b-engines', from: 'subtask-b', to: 'engine-header', type: 'flow', fromSide: 'right', toSide: 'left', label: 'dispatch', labelPos: { x: 590, y: 1120 } },
 
   // each engine -> fusion
   { id: 'a-eng-ts', from: 'eng-timeseries', to: 'fusion', type: 'flow', fromSide: 'bottom', toSide: 'top', toOffset: 0.42 },
@@ -651,6 +651,7 @@ export const arrows: DiagramArrow[] = [
     fromSide: 'left',
     toSide: 'left',
     label: 'tells B which methods to trust',
+    labelPos: { x: 560, y: 856 },
     via: [
       { x: 1670, y: 1257 },
       { x: 1670, y: 874 },
@@ -668,6 +669,7 @@ export const arrows: DiagramArrow[] = [
     toSide: 'top',
     toOffset: 0.84,
     label: 'tells Fusion how to weight',
+    labelPos: { x: 1916, y: 1398 },
   },
   // Sub-task B -> The Log : down the left channel, along the bottom band, up the inner right gutter.
   {
@@ -679,6 +681,7 @@ export const arrows: DiagramArrow[] = [
     toSide: 'right',
     toOffset: 0.85,
     label: 'writes routing decision',
+    labelPos: { x: 1170, y: 1390 },
     via: [
       { x: 866, y: 1152 },
       { x: 866, y: 1405 },
@@ -697,12 +700,14 @@ export const arrows: DiagramArrow[] = [
     fromOffset: 0.92,
     toOffset: 0.62,
     label: 'writes weighting decision',
+    labelPos: { x: 2150, y: 1366 },
+    labelAnchor: 'end',
     via: [
       { x: 2260, y: 1432 },
       { x: 2260, y: 1074 },
     ],
   },
-  // Output -> The Log : up the outer right gutter (closes the loop).
+  // Output -> The Vault : up the outer right gutter (closes the calibration loop).
   {
     id: 'c-out-log',
     from: 'output',
@@ -712,7 +717,9 @@ export const arrows: DiagramArrow[] = [
     toSide: 'right',
     fromOffset: 0.97,
     toOffset: 0.35,
-    label: 'writes resolved prediction — closes the loop',
+    label: 'writes resolved outcome — closes the loop',
+    labelPos: { x: 2150, y: 1606 },
+    labelAnchor: 'end',
     via: [
       { x: 2285, y: 1632 },
       { x: 2285, y: 1030 },

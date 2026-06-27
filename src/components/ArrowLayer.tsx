@@ -4,6 +4,9 @@ import { resolveArrowPath, type ResolvedArrow } from '../geometry';
 import type { DiagramArrow } from '../types';
 import styles from './ArrowLayer.module.css';
 
+const LABEL_PAD = 96; // keep label centers far enough from the canvas edge to avoid clipping
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+
 interface Props {
   arrows: DiagramArrow[];
   layer: 'base' | 'overlay';
@@ -85,18 +88,21 @@ export default function ArrowLayer({ arrows, layer, focusMode, activeArrowIds }:
             : `url(#${m('ah-flow')})`;
 
         const showLabel = !!a.label && (layer === 'overlay' ? true : !focusMode);
+        const lp = a.labelPos ?? r.mid;
+        const lx = clamp(lp.x, LABEL_PAD, CANVAS.w - LABEL_PAD);
+        const anchor = a.labelAnchor ?? 'middle';
 
         return (
           <g key={a.id + layer}>
             <path d={r.d} className={pathClass} markerEnd={markerEnd} fill="none" />
             {showLabel && (
               <text
-                x={r.mid.x}
-                y={r.mid.y}
+                x={lx}
+                y={lp.y}
                 className={[styles.label, isCalib ? styles.labelCalib : '', isActive ? styles.labelActive : '']
                   .filter(Boolean)
                   .join(' ')}
-                textAnchor="middle"
+                textAnchor={anchor}
                 dominantBaseline="middle"
               >
                 {a.label}
