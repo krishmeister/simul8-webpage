@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
 // width reserved on the right for the docked demo controller (panel 340 + gaps)
 const DEMO_RIGHT_INSET = 384;
+// vertical space reserved at the top for the fixed header overlay so the
+// diagram's title + industries row aren't clipped beneath it on the fit.
+const HEADER_INSET_DESKTOP = 104;
+const HEADER_INSET_MOBILE = 84;
 import {
   TransformWrapper,
   TransformComponent,
@@ -43,26 +47,38 @@ export default function Canvas(props: Props) {
     if (!api || !el) return;
     const vw = el.clientWidth;
     const vh = el.clientHeight;
+    // Guard against running before layout is measured — a zero/stale size would
+    // produce a bogus transform and leave the diagram clipped at the top-left.
+    if (vw === 0 || vh === 0) return;
     // In demo mode on desktop, reserve the right strip for the docked controller
     // and centre the diagram in the remaining (left) region so nothing is occluded.
     const rightInset = demoModeRef.current && vw > 640 ? DEMO_RIGHT_INSET : 0;
+    // Always reserve the top strip for the fixed header so the title isn't clipped.
+    const topInset = vw > 640 ? HEADER_INSET_DESKTOP : HEADER_INSET_MOBILE;
     const avail = vw - rightInset;
-    const raw = Math.min(avail / CANVAS.w, vh / CANVAS.h) * 0.94;
+    const availH = vh - topInset;
+    const raw = Math.min(avail / CANVAS.w, availH / CANVAS.h) * 0.94;
     const scale = Math.max(MIN_SCALE, Math.min(raw, 1.2));
     const x = (avail - CANVAS.w * scale) / 2;
-    const y = (vh - CANVAS.h * scale) / 2;
+    const y = topInset + (availH - CANVAS.h * scale) / 2;
     api.setTransform(x, y, scale, animate ? 350 : 0);
   }, []);
 
-  // Fit to screen on mount + whenever the viewport resizes.
+  // Fit to screen once the container has been measured, then on every resize.
+  // A ResizeObserver (rather than a one-shot rAF) guarantees the first fit runs
+  // against real dimensions — fit() itself no-ops on a zero/stale size — so the
+  // diagram is correctly framed from the first paint instead of clipped top-left.
   useEffect(() => {
+    const el = containerRef.current;
+    const ro = new ResizeObserver(() => fit(false));
+    if (el) ro.observe(el);
+    // rAF covers the common case where layout is ready on the next frame.
     const id = requestAnimationFrame(() => fit(false));
     const onResize = () => fit(false);
-    window.addEventListener('resize', onResize);
     window.addEventListener('orientationchange', onResize);
     return () => {
       cancelAnimationFrame(id);
-      window.removeEventListener('resize', onResize);
+      ro.disconnect();
       window.removeEventListener('orientationchange', onResize);
     };
   }, [fit]);
