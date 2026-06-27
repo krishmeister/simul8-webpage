@@ -233,15 +233,17 @@
 /* fusion moves */
 .moveRow {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 .move {
+  min-width: 0;
+  overflow-wrap: anywhere;
   background: color-mix(in srgb, var(--card) 66%, var(--surface));
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 8px 12px;
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1.35;
   color: var(--ink);
   font-weight: 500;
@@ -250,11 +252,13 @@
 /* output cards */
 .cardRow {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 .outCard {
   position: relative;
+  min-width: 0;
+  overflow-wrap: anywhere;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
