@@ -1,0 +1,22 @@
+.container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+}
+.container:active {
+  cursor: grabbing;
+}
+
+/* react-zoom-pan-pinch fills the container */
+.ttWrapper {
+  width: 100% !important;
+  height: 100% !important;
+}
+.ttContent {
+  /* sized by the plane inside */
+}
+
+.plane {
+  position: relative;
+}

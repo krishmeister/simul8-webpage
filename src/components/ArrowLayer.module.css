@@ -1,0 +1,86 @@
+.svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.base {
+  z-index: 1;
+}
+.overlay {
+  z-index: 40;
+}
+
+/* ---- paths ---- */
+.path {
+  fill: none;
+  stroke-linecap: round;
+  transition: opacity 0.25s ease, stroke-width 0.18s ease;
+}
+.flow {
+  stroke: var(--flow);
+  stroke-width: 2px;
+}
+.calib {
+  stroke: var(--calib);
+  stroke-width: 2.4px;
+  stroke-dasharray: 7 6;
+  opacity: 0.85;
+}
+.active.flow {
+  stroke: var(--flow-strong);
+  stroke-width: 3px;
+}
+.active.calib {
+  stroke: var(--calib-strong);
+  stroke-width: 3.4px;
+  opacity: 1;
+}
+.dim {
+  opacity: 0.1;
+}
+.animated {
+  animation: marchAndPulse 0.9s linear infinite;
+}
+@keyframes marchAndPulse {
+  to {
+    stroke-dashoffset: -52;
+  }
+}
+
+/* ---- markers ---- */
+.mFlow path {
+  fill: var(--flow);
+}
+.mFlowActive path {
+  fill: var(--flow-strong);
+}
+.mCalib path {
+  fill: var(--calib);
+}
+.mCalibActive path {
+  fill: var(--calib-strong);
+}
+
+/* ---- labels ---- */
+.label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--ink-2);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.labelCalib {
+  fill: var(--calib-strong);
+}
+.labelActive {
+  fill: var(--ink);
+  font-weight: 700;
+}
+.labelActive.labelCalib {
+  fill: var(--calib-strong);
+}
