@@ -3,6 +3,7 @@ import styles from './Controls.module.css';
 interface Props {
   calibrationMode: boolean;
   showCalibration: boolean;
+  demoMode: boolean;
   onToggleCalibration: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
@@ -12,6 +13,7 @@ interface Props {
 export default function Controls({
   calibrationMode,
   showCalibration,
+  demoMode,
   onToggleCalibration,
   onZoomIn,
   onZoomOut,
@@ -32,7 +34,7 @@ export default function Controls({
         </button>
       )}
 
-      <div className={styles.zoom}>
+      <div className={`${styles.zoom} ${demoMode ? styles.zoomDemo : ''}`}>
         <button type="button" onClick={onZoomIn} aria-label="Zoom in" title="Zoom in">
           <PlusIcon />
         </button>

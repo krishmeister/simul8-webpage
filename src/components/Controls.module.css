@@ -80,6 +80,11 @@
   background: var(--hairline);
 }
 
+/* during demo, sit just left of the docked controller panel */
+.zoomDemo {
+  right: 400px;
+}
+
 @media (max-width: 640px) {
   .calib {
     bottom: 18px;

@@ -1,16 +1,19 @@
+/* Desktop: docked as a vertical card on the right. The canvas is offset left
+   (Canvas rightInset) so highlighted nodes never sit under this panel. */
 .bar {
   position: fixed;
-  left: 50%;
-  bottom: 20px;
-  transform: translateX(-50%);
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 90;
-  width: min(760px, calc(100vw - 32px));
+  width: 340px;
+  max-height: 86vh;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 18px;
+  gap: 14px;
+  padding: 18px;
   border-radius: 18px;
-  background: color-mix(in srgb, var(--card) 92%, transparent);
+  background: color-mix(in srgb, var(--card) 94%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid var(--hairline);
   box-shadow: var(--shadow-hover);
@@ -18,20 +21,20 @@
 
 .head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
 .meta {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 .company {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 16px;
+  font-size: 17px;
   color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
@@ -60,31 +63,27 @@
   color: var(--ink);
 }
 
+/* vertical timeline rail */
 .rail {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
-}
-.rail::-webkit-scrollbar {
-  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
 }
 .railItem {
-  flex: 1 1 auto;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 7px;
+  justify-content: flex-start;
+  gap: 10px;
   white-space: nowrap;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 8px 11px;
+  border-radius: 9px;
   border: none;
   background: transparent;
   color: var(--ink-3);
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 600;
+  text-align: left;
   transition: color 0.15s ease, background 0.15s ease;
 }
 .railItem:hover {
@@ -115,23 +114,24 @@
 }
 
 .body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 .caption {
   margin: 0;
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink);
 }
 .detail {
   margin: 0;
   font-size: 12.5px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--ink-2);
-  max-height: 5.4em;
-  overflow-y: auto;
 }
 
 .transport {
@@ -144,8 +144,8 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  height: 40px;
-  padding: 0 18px;
+  height: 42px;
+  padding: 0 16px;
   border-radius: 11px;
   font-size: 14px;
   font-weight: 700;
@@ -176,14 +176,47 @@
   cursor: default;
 }
 
+/* Mobile: bottom sheet with a horizontal rail (right-dock is desktop-only). */
 @media (max-width: 640px) {
   .bar {
+    right: auto;
+    left: 50%;
+    top: auto;
     bottom: 12px;
+    transform: translateX(-50%);
     width: calc(100vw - 20px);
+    max-height: 56vh;
     padding: 13px 14px;
     gap: 10px;
   }
+  .meta {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 10px;
+  }
   .company {
-    font-size: 14px;
+    font-size: 15px;
+  }
+  .rail {
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+  .railItem {
+    flex: 1 1 auto;
+    justify-content: center;
+    font-size: 11.5px;
+  }
+  .body {
+    overflow: visible;
+  }
+  .detail {
+    max-height: 5em;
+    overflow-y: auto;
   }
 }

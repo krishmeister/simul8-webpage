@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
+// width reserved on the right for the docked demo controller (panel 340 + gaps)
+const DEMO_RIGHT_INSET = 384;
 import {
   TransformWrapper,
   TransformComponent,
@@ -32,6 +34,8 @@ const MAX_SCALE = 2.4;
 export default function Canvas(props: Props) {
   const apiRef = useRef<ReactZoomPanPinchRef | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const demoModeRef = useRef(props.demoMode);
+  demoModeRef.current = props.demoMode;
 
   const fit = useCallback((animate = true) => {
     const api = apiRef.current;
@@ -39,9 +43,13 @@ export default function Canvas(props: Props) {
     if (!api || !el) return;
     const vw = el.clientWidth;
     const vh = el.clientHeight;
-    const raw = Math.min(vw / CANVAS.w, vh / CANVAS.h) * 0.94;
+    // In demo mode on desktop, reserve the right strip for the docked controller
+    // and centre the diagram in the remaining (left) region so nothing is occluded.
+    const rightInset = demoModeRef.current && vw > 640 ? DEMO_RIGHT_INSET : 0;
+    const avail = vw - rightInset;
+    const raw = Math.min(avail / CANVAS.w, vh / CANVAS.h) * 0.94;
     const scale = Math.max(MIN_SCALE, Math.min(raw, 1.2));
-    const x = (vw - CANVAS.w * scale) / 2;
+    const x = (avail - CANVAS.w * scale) / 2;
     const y = (vh - CANVAS.h * scale) / 2;
     api.setTransform(x, y, scale, animate ? 350 : 0);
   }, []);
@@ -58,6 +66,17 @@ export default function Canvas(props: Props) {
       window.removeEventListener('orientationchange', onResize);
     };
   }, [fit]);
+
+  // Re-frame (animated) whenever demo mode toggles, so entering/leaving the demo
+  // slides the diagram clear of (or back from) the docked panel.
+  const firstFrame = useRef(true);
+  useEffect(() => {
+    if (firstFrame.current) {
+      firstFrame.current = false;
+      return;
+    }
+    fit(true);
+  }, [props.demoMode, fit]);
 
   return (
     <div className={`${styles.container} touch-none`} ref={containerRef}>
@@ -114,6 +133,7 @@ export default function Canvas(props: Props) {
       <Controls
         calibrationMode={props.calibrationMode}
         showCalibration={props.showCalibration}
+        demoMode={props.demoMode}
         onToggleCalibration={props.onToggleCalibration}
         onZoomIn={() => apiRef.current?.zoomIn(0.25)}
         onZoomOut={() => apiRef.current?.zoomOut(0.25)}
