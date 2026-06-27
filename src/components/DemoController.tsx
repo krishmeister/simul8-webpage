@@ -1,4 +1,7 @@
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import type { Scenario, StageId, FlowStage } from '../data/demoScenarios';
+import type { ComponentContribution } from '../data/demoScenariosExpanded';
 import styles from './DemoController.module.css';
 
 interface Props {
@@ -61,7 +64,7 @@ export default function DemoController({
 
       <div className={styles.body}>
         <p className={styles.caption}>{stage.caption}</p>
-        <p className={styles.detail}>{stage.detail}</p>
+        <ClampText text={stage.detail} lines={4} className={styles.detail} />
 
         {isInputStage(stage.stage) && stage.inputComponentDetail && (
           <SubBoxList comp={stage.inputComponentDetail} />
@@ -108,6 +111,12 @@ interface RailProps {
 
 function Rail({ flow, stageIndex, onJump }: RailProps) {
   let inputGroupHeaderRendered = false;
+  const activeRef = useRef<HTMLButtonElement>(null);
+
+  // The rail is height-capped and scrolls; keep the current stage in view.
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [stageIndex]);
 
   return (
     <div className={styles.rail} role="tablist" aria-label="Flow stages">
@@ -131,6 +140,7 @@ function Rail({ flow, stageIndex, onJump }: RailProps) {
               )}
               <button
                 key={s.stage}
+                ref={i === stageIndex ? activeRef : undefined}
                 type="button"
                 role="tab"
                 aria-selected={i === stageIndex}
@@ -153,6 +163,7 @@ function Rail({ flow, stageIndex, onJump }: RailProps) {
         return (
           <button
             key={s.stage}
+            ref={i === stageIndex ? activeRef : undefined}
             type="button"
             role="tab"
             aria-selected={i === stageIndex}
@@ -175,8 +186,6 @@ function Rail({ flow, stageIndex, onJump }: RailProps) {
 
 // ---- Sub-box list (input stages) ----
 
-import type { ComponentContribution } from '../data/demoScenariosExpanded';
-
 interface SubBoxListProps {
   comp: ComponentContribution;
 }
@@ -193,7 +202,12 @@ function SubBoxList({ comp }: SubBoxListProps) {
           <div className={styles.subBoxContent}>
             <span className={styles.subBoxName}>{sb.box}</span>
             {sb.relevant ? (
-              <span className={styles.subBoxContrib}>{sb.contributed}</span>
+              <ClampText
+                text={sb.contributed}
+                lines={3}
+                className={styles.subBoxContrib}
+                wrapClassName={styles.subBoxContribWrap}
+              />
             ) : (
               <span className={styles.subBoxNotUsed}>not used for this question</span>
             )}
@@ -210,7 +224,64 @@ function ResolveRow({ label, value }: { label: string; value: string }) {
   return (
     <div className={styles.resolveRow}>
       <span className={styles.resolveLabel}>{label}</span>
-      <span className={styles.resolveValue}>{value}</span>
+      <ClampText text={value} lines={3} className={styles.resolveValue} />
+    </div>
+  );
+}
+
+// ---- Read-more / show-less clamp ----
+// Collapses long copy to `lines` lines with an inline expander. The expander
+// only appears when the text actually overflows the clamp (measured against the
+// collapsed box). Used for the stage detail, sub-box contributions and the
+// resolve values — the longest content in the panel.
+interface ClampTextProps {
+  text: string;
+  lines: number;
+  className?: string;
+  wrapClassName?: string;
+}
+
+function ClampText({ text, lines, className, wrapClassName }: ClampTextProps) {
+  const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+  const ref = useRef<HTMLParagraphElement>(null);
+
+  // Measure overflow only while collapsed (when expanded the box has no clamp,
+  // so scrollHeight === clientHeight and the measure would be meaningless).
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || expanded) return;
+    const measure = () => setOverflowing(el.scrollHeight > el.clientHeight + 1);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [text, lines, expanded]);
+
+  // Collapse back to the top whenever the underlying text changes (stage change).
+  useEffect(() => setExpanded(false), [text]);
+
+  const pClass = [className, styles.clampLine, expanded ? styles.clampOpen : '']
+    .filter(Boolean)
+    .join(' ');
+  const pStyle: CSSProperties | undefined = expanded
+    ? undefined
+    : ({ WebkitLineClamp: lines } as CSSProperties);
+
+  return (
+    <div className={[styles.clampWrap, wrapClassName].filter(Boolean).join(' ')}>
+      <p ref={ref} className={pClass} style={pStyle}>
+        {text}
+      </p>
+      {(overflowing || expanded) && (
+        <button
+          type="button"
+          className={styles.readMore}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {expanded ? 'Show less' : 'Read more'}
+        </button>
+      )}
     </div>
   );
 }

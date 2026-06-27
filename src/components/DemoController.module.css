@@ -7,7 +7,7 @@
   transform: translateY(-50%);
   z-index: 90;
   width: 340px;
-  max-height: 86vh;
+  max-height: 94vh;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -63,12 +63,26 @@
   color: var(--ink);
 }
 
-/* vertical timeline rail */
+/* vertical timeline rail — height-capped + scrollable so the body (the reading
+   area) gets the lion's share of the panel height. The active item is scrolled
+   into view by the component. */
 .rail {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 2px;
+  flex: 0 0 auto;
+  min-height: 0;
+  max-height: 26vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.rail::-webkit-scrollbar {
+  width: 6px;
+}
+.rail::-webkit-scrollbar-thumb {
+  background: var(--hairline);
+  border-radius: 3px;
 }
 .railItem {
   display: inline-flex;
@@ -116,6 +130,9 @@
 .body {
   flex: 1 1 auto;
   min-height: 0;
+  /* use the available vertical space — the body is the reading area and gets
+     most of the panel's height (the rail is capped above) */
+  max-height: 65vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -125,6 +142,39 @@
   padding-right: 6px;
   padding-bottom: 4px;
   scrollbar-gutter: stable;
+}
+
+/* ---- Read more / show less ---- */
+.clampWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.clampLine {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clampOpen {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: none;
+}
+.readMore {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--demo);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.readMore:hover {
+  text-decoration: underline;
 }
 .caption {
   margin: 0;
@@ -317,7 +367,7 @@
   display: grid;
   grid-template-columns: 64px 1fr;
   gap: 10px;
-  align-items: baseline;
+  align-items: start;
 }
 .resolveLabel {
   font-size: 10.5px;
@@ -342,7 +392,7 @@
     bottom: 12px;
     transform: translateX(-50%);
     width: calc(100vw - 20px);
-    max-height: 64vh;
+    max-height: 72vh;
     padding: 13px 14px;
     gap: 10px;
   }
@@ -354,10 +404,13 @@
   .company {
     font-size: 15px;
   }
+  /* horizontal rail on mobile — override the desktop vertical cap/scroll */
   .rail {
     flex-direction: row;
     align-items: center;
+    max-height: none;
     overflow-x: auto;
+    overflow-y: visible;
     scrollbar-width: none;
     padding-bottom: 2px;
   }
@@ -369,16 +422,11 @@
     justify-content: center;
     font-size: 11.5px;
   }
-  /* Body scrolls within the capped sheet so the resolve panel / sub-box list
-     never overflow behind the transport. Detail stays capped so the rich
-     content below it (intent callout, resolve panel) shows without a long scroll. */
+  /* Body scrolls within the capped sheet; the Read-more clamp keeps default
+     content short so it rarely needs scrolling at all. */
   .body {
     overflow-y: auto;
-  }
-  .detail {
-    max-height: 5em;
-    overflow-y: auto;
-    flex: none;
+    max-height: none;
   }
   .railGroup {
     display: none;
@@ -386,7 +434,8 @@
   .railSub {
     padding-left: 11px;
   }
-  .subBoxContrib {
+  /* keep the mobile sub-box list compact: names only, no contributed text */
+  .subBoxContribWrap {
     display: none;
   }
   .resolveRow {
