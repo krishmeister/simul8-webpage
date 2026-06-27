@@ -22,8 +22,11 @@ Built with **Vite + React + TypeScript**, plain **CSS Modules** (no UI framework
   with the node's **full description** (a bottom sheet on mobile).
 - **“Show calibration loop”** — the hero button. Highlights and animates the five calibration
   arrows — routed around the engine block — so the learning loop is unmistakable.
-- **ESC** returns to the default view: clears selection, turns off the calibration highlight,
-  removes dimming and closes the panel.
+- **The Bible** — a header button opens the full project explainer
+  ([`src/data/bible.md`](src/data/bible.md)) in a themed, scrollable slide-over rendered with
+  react-markdown (headings, tables, lists, code) in a comfortable 720px reading column.
+- **ESC** returns to the default view: closes the Bible, clears selection, turns off the
+  calibration highlight, removes dimming and closes the detail panel.
 - **Data-driven** — every node and arrow lives in [`src/data/diagram.ts`](src/data/diagram.ts).
   Edit that one file to change the diagram; the views are dumb renderers.
 - **Mobile-first** — tested at 375px; fully explorable by drag/pinch.
