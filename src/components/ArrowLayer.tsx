@@ -87,7 +87,9 @@ export default function ArrowLayer({ arrows, layer, focusMode, activeArrowIds }:
             ? `url(#${m('ah-calib')})`
             : `url(#${m('ah-flow')})`;
 
-        const showLabel = !!a.label && (layer === 'overlay' ? true : !focusMode);
+        // Flow labels show in the resting view; calibration-loop labels appear only when the loop is highlighted.
+        const showLabel =
+          !!a.label && (layer === 'overlay' ? true : !focusMode && a.type === 'flow');
         const lp = a.labelPos ?? r.mid;
         const lx = clamp(lp.x, LABEL_PAD, CANVAS.w - LABEL_PAD);
         const anchor = a.labelAnchor ?? 'middle';

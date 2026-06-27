@@ -51,6 +51,14 @@ const browser = await chromium.launch();
   await settle(page);
   await shot(page, '06-desktop-esc-from-calib');
 
+  // The Bible slide-over
+  await page.getByTestId('bible-open').click();
+  await settle(page, 900);
+  await shot(page, '10-desktop-bible');
+  await page.keyboard.press('Escape');
+  await settle(page);
+  await shot(page, '11-desktop-esc-from-bible');
+
   await ctx.close();
 }
 
@@ -73,6 +81,12 @@ const browser = await chromium.launch();
   await page.getByTestId('calib-toggle').click();
   await settle(page);
   await shot(page, '09-mobile-calibration');
+
+  await page.keyboard.press('Escape').catch(() => {});
+  await settle(page);
+  await page.getByTestId('bible-open').click();
+  await settle(page, 900);
+  await shot(page, '12-mobile-bible');
 
   await ctx.close();
 }

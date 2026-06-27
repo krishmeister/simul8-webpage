@@ -618,7 +618,7 @@ export const arrows: DiagramArrow[] = [
   { id: 'a-accum-a', from: 'accumulated', to: 'subtask-a', type: 'flow', fromOffset: 0.1, toSide: 'top' },
 
   // sub-task A loop
-  { id: 'a-a-ask', from: 'subtask-a', to: 'ask-user', type: 'flow', fromSide: 'right', toSide: 'left', label: 'if not enough' },
+  { id: 'a-a-ask', from: 'subtask-a', to: 'ask-user', type: 'flow', fromSide: 'right', toSide: 'left', label: 'if not enough', labelPos: { x: 474, y: 922 } },
   { id: 'a-ask-accum', from: 'ask-user', to: 'accumulated', type: 'flow', fromSide: 'top', toSide: 'bottom', toOffset: 0.17, curve: 1.15, label: 'loop back' },
 
   // sub-task A -> sub-task B
