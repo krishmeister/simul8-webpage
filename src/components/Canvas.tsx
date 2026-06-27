@@ -35,6 +35,10 @@ interface Props {
 
 const MIN_SCALE = 0.08;
 const MAX_SCALE = 2.4;
+// Exponential zoom sensitivity for ctrl+wheel (trackpad pinch). Small enough that a
+// trackpad pinch is smooth, large enough that a mouse ctrl+wheel notch (~100 delta)
+// is a sensible step.
+const ZOOM_SENSITIVITY = 0.0025;
 
 export default function Canvas(props: Props) {
   const apiRef = useRef<ReactZoomPanPinchRef | null>(null);
@@ -95,6 +99,42 @@ export default function Canvas(props: Props) {
     fit(true);
   }, [props.demoMode, fit]);
 
+  // Figma/trackpad-style gestures. The library's own wheel handling is disabled
+  // (wheel.disabled) so we own the wheel: a plain two-finger scroll pans
+  // (deltaX/deltaY), a pinch arrives as a wheel with ctrlKey set and zooms
+  // centered on the pointer. We attach a non-passive native listener because
+  // React's synthetic onWheel is passive and can't preventDefault — without
+  // preventDefault the page itself would scroll. Click-drag pan and touch
+  // pinch are still handled by the library (panning / pinch configs).
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      const api = apiRef.current;
+      if (!api) return;
+      e.preventDefault();
+      const { scale, positionX, positionY } = api.instance.transformState;
+      if (e.ctrlKey) {
+        // pinch → zoom toward the pointer, keeping that point fixed on screen
+        const rect = el.getBoundingClientRect();
+        const px = e.clientX - rect.left;
+        const py = e.clientY - rect.top;
+        const factor = Math.exp(-e.deltaY * ZOOM_SENSITIVITY);
+        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * factor));
+        if (newScale === scale) return;
+        // content point under the cursor, held invariant across the zoom
+        const cx = (px - positionX) / scale;
+        const cy = (py - positionY) / scale;
+        api.setTransform(px - cx * newScale, py - cy * newScale, newScale, 0);
+      } else {
+        // two-finger scroll → pan both axes
+        api.setTransform(positionX - e.deltaX, positionY - e.deltaY, scale, 0);
+      }
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
   return (
     <div className={`${styles.container} touch-none`} ref={containerRef}>
       <TransformWrapper
@@ -105,7 +145,7 @@ export default function Canvas(props: Props) {
         limitToBounds={false}
         centerZoomedOut={false}
         doubleClick={{ disabled: true }}
-        wheel={{ step: 0.08 }}
+        wheel={{ disabled: true }}
         pinch={{ step: 6 }}
         panning={{ velocityDisabled: false }}
       >
