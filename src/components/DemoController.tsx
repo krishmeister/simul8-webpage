@@ -13,7 +13,7 @@ interface Props {
 const STAGE_LABEL: Record<StageId, string> = {
   input: 'Input',
   accumulate: 'Accumulate',
-  subtaskA: 'Intent',
+  subtaskA: 'Intent Inference',
   subtaskB: 'Method',
   engines: 'Engines',
   fusion: 'Fusion',

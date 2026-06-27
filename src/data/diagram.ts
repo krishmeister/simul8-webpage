@@ -359,7 +359,7 @@ export const nodes: DiagramNode[] = [
     position: { x: 110, y: 940 },
     size: { w: 350, h: 120 },
     color: 'amber',
-    title: 'Sub-task A — Intent',
+    title: 'Sub-task A — Intent Inference',
     ai: true,
     subtitle: 'parses the raw request into a structured problem',
     fullDescription:
