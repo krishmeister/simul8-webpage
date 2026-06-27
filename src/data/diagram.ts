@@ -17,8 +17,8 @@ export const nodes: DiagramNode[] = [
   {
     id: 'simul8',
     variant: 'title',
-    position: { x: 1040, y: 40 },
-    size: { w: 220, h: 66 },
+    position: { x: 1000, y: 40 },
+    size: { w: 300, h: 74 },
     title: 'Simul8',
     subtitle: 'calibrated decision-intelligence',
     fullDescription:

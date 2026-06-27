@@ -64,12 +64,13 @@
   border: 1px solid var(--hairline);
   display: grid;
   place-items: center;
+  padding: 10px 20px;
 }
 .titleBody {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 5px;
 }
 .wordmark {
   font-family: var(--font-display);
@@ -78,6 +79,7 @@
   letter-spacing: 0.5px;
   color: var(--wordmark-fg);
   line-height: 1;
+  white-space: nowrap;
 }
 .titleSub {
   font-size: 11px;
@@ -85,6 +87,7 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--wordmark-fg) 64%, transparent);
+  white-space: nowrap;
 }
 
 /* ------------------------------------------------------------------ */
