@@ -35,10 +35,14 @@ interface Props {
 
 const MIN_SCALE = 0.08;
 const MAX_SCALE = 2.4;
-// Exponential zoom sensitivity for ctrl+wheel (trackpad pinch). Small enough that a
-// trackpad pinch is smooth, large enough that a mouse ctrl+wheel notch (~100 delta)
-// is a sensible step.
-const ZOOM_SENSITIVITY = 0.0025;
+// Exponential zoom for ctrl+wheel (trackpad pinch). Higher sensitivity makes a
+// sustained pinch zoom continuously and responsively (Figma-feel) rather than
+// creeping in tiny steps. The step is multiplicative and scales with the event's
+// deltaY magnitude, so a faster/bigger pinch zooms more.
+const ZOOM_SENSITIVITY = 0.01;
+// Cap the per-event multiplicative step so a single coarse mouse ctrl+wheel notch
+// (deltaY ~100) doesn't jump wildly, while a trackpad pinch (small deltas) stays smooth.
+const MAX_ZOOM_STEP = 1.8;
 
 export default function Canvas(props: Props) {
   const apiRef = useRef<ReactZoomPanPinchRef | null>(null);
@@ -119,7 +123,8 @@ export default function Canvas(props: Props) {
         const rect = el.getBoundingClientRect();
         const px = e.clientX - rect.left;
         const py = e.clientY - rect.top;
-        const factor = Math.exp(-e.deltaY * ZOOM_SENSITIVITY);
+        const rawFactor = Math.exp(-e.deltaY * ZOOM_SENSITIVITY);
+        const factor = Math.max(1 / MAX_ZOOM_STEP, Math.min(MAX_ZOOM_STEP, rawFactor));
         const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * factor));
         if (newScale === scale) return;
         // content point under the cursor, held invariant across the zoom
