@@ -8,6 +8,7 @@ import BiblePanel from './components/BiblePanel';
 import DemoLauncher from './components/DemoLauncher';
 import DemoPicker from './components/DemoPicker';
 import DemoController from './components/DemoController';
+import DemoOutput from './components/DemoOutput';
 import Header from './components/Header';
 import Legend from './components/Legend';
 import styles from './App.module.css';
@@ -112,6 +113,11 @@ export default function App() {
     setDemoPlaying(false);
   }, [demoScenario]);
 
+  const demoReplay = useCallback(() => {
+    setDemoStage(0);
+    setDemoPlaying(true);
+  }, []);
+
   // Auto-advance the flow while playing.
   useEffect(() => {
     if (demoPhase !== 'playing' || !demoPlaying || !demoScenario) return;
@@ -202,6 +208,7 @@ export default function App() {
   }, [selectedId, calibrationMode, demoPhase, demoStage, demoScenario]);
 
   const demoMode = demoPhase === 'playing';
+  const demoOutputOpen = demoMode && demoScenario?.flow[demoStage]?.stage === 'output';
   const focusMode = calibrationMode || selectedId !== null || demoMode;
   const rawSelected = selectedId ? nodeById.get(selectedId) ?? null : null;
   const selectedNode =
@@ -241,6 +248,15 @@ export default function App() {
           onPrev={demoPrev}
           onNext={demoNext}
           onJump={demoJump}
+          onExit={exitDemo}
+        />
+      )}
+      {demoOutputOpen && demoScenario && (
+        <DemoOutput
+          key={demoScenario.id}
+          scenario={demoScenario}
+          onBack={demoPrev}
+          onReplay={demoReplay}
           onExit={exitDemo}
         />
       )}
