@@ -14,7 +14,6 @@ import Legend from './components/Legend';
 import styles from './App.module.css';
 
 type DemoPhase = 'off' | 'picker' | 'playing';
-const STAGE_MS = 3000;
 
 // For arrow animation, the flow stages map to nodes that aren't always the arrow
 // endpoints — bridge the input panels to the section frame and the engines to the header.
@@ -34,7 +33,6 @@ export default function App() {
   const [demoPhase, setDemoPhase] = useState<DemoPhase>('off');
   const [demoScenarioId, setDemoScenarioId] = useState<string | null>(null);
   const [demoStage, setDemoStage] = useState(0);
-  const [demoPlaying, setDemoPlaying] = useState(false);
 
   const demoScenario = useMemo(
     () => DEMO_SCENARIOS.find((s) => s.id === demoScenarioId) ?? null,
@@ -75,7 +73,6 @@ export default function App() {
 
   const exitDemo = useCallback(() => {
     setDemoPhase('off');
-    setDemoPlaying(false);
     setDemoStage(0);
     setDemoScenarioId(null);
   }, []);
@@ -83,48 +80,19 @@ export default function App() {
   const pickScenario = useCallback((id: string) => {
     setDemoScenarioId(id);
     setDemoStage(0);
-    setDemoPlaying(true);
     setDemoPhase('playing');
   }, []);
 
-  const demoTogglePlay = useCallback(() => {
-    if (!demoScenario) return;
-    const last = demoScenario.flow.length - 1;
-    if (!demoPlaying && demoStage >= last) {
-      setDemoStage(0);
-      setDemoPlaying(true);
-    } else {
-      setDemoPlaying((p) => !p);
-    }
-  }, [demoScenario, demoPlaying, demoStage]);
+  // The flow is manual — the user steps with Next / Previous / the stage rail.
+  const demoJump = useCallback((i: number) => setDemoStage(i), []);
 
-  const demoJump = useCallback((i: number) => {
-    setDemoStage(i);
-    setDemoPlaying(false);
-  }, []);
-
-  const demoPrev = useCallback(() => {
-    setDemoStage((s) => Math.max(0, s - 1));
-    setDemoPlaying(false);
-  }, []);
+  const demoPrev = useCallback(() => setDemoStage((s) => Math.max(0, s - 1)), []);
 
   const demoNext = useCallback(() => {
     setDemoStage((s) => (demoScenario ? Math.min(demoScenario.flow.length - 1, s + 1) : s));
-    setDemoPlaying(false);
   }, [demoScenario]);
 
-  const demoReplay = useCallback(() => {
-    setDemoStage(0);
-    setDemoPlaying(true);
-  }, []);
-
-  // Auto-advance the flow while playing.
-  useEffect(() => {
-    if (demoPhase !== 'playing' || !demoPlaying || !demoScenario) return;
-    if (demoStage >= demoScenario.flow.length - 1) return;
-    const t = setTimeout(() => setDemoStage((s) => s + 1), STAGE_MS);
-    return () => clearTimeout(t);
-  }, [demoPhase, demoPlaying, demoStage, demoScenario]);
+  const demoReplay = useCallback(() => setDemoStage(0), []);
 
   // ESC returns to the default view in one keypress: closes the Bible and the
   // demo, clears selection, turns off the calibration highlight.
@@ -135,7 +103,6 @@ export default function App() {
         setSelectedId(null);
         setCalibrationMode(false);
         setDemoPhase('off');
-        setDemoPlaying(false);
         setDemoStage(0);
         setDemoScenarioId(null);
       }
@@ -239,12 +206,10 @@ export default function App() {
 
       {demoPhase === 'off' && <DemoLauncher onClick={openDemoPicker} />}
       <DemoPicker open={demoPhase === 'picker'} onPick={pickScenario} onClose={exitDemo} />
-      {demoMode && demoScenario && (
+      {demoMode && demoScenario && !demoOutputOpen && (
         <DemoController
           scenario={demoScenario}
           stageIndex={demoStage}
-          playing={demoPlaying}
-          onTogglePlay={demoTogglePlay}
           onPrev={demoPrev}
           onNext={demoNext}
           onJump={demoJump}

@@ -16,7 +16,7 @@
   box-shadow: var(--shadow-hover);
 }
 
-.topRow {
+.head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -43,46 +43,21 @@
   color: var(--ink-3);
   white-space: nowrap;
 }
-.transport {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.transport button {
-  width: 34px;
-  height: 34px;
+.exit {
+  flex: none;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
   border-radius: 9px;
   border: 1px solid var(--hairline);
   background: var(--paper);
   color: var(--ink-2);
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-.transport button:hover:not(:disabled) {
+.exit:hover {
   background: var(--paper-2);
   color: var(--ink);
-}
-.transport button:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-.playBtn {
-  background: var(--demo) !important;
-  border-color: var(--demo) !important;
-  color: var(--demo-fg) !important;
-}
-.divider {
-  width: 1px;
-  height: 22px;
-  background: var(--hairline);
-  margin: 0 2px;
-}
-.exit {
-  width: auto !important;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 600;
 }
 
 .rail {
@@ -101,7 +76,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 7px;
   white-space: nowrap;
   padding: 6px 10px;
   border-radius: 8px;
@@ -117,6 +92,7 @@
   color: var(--ink-2);
 }
 .dot {
+  flex: none;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -158,6 +134,48 @@
   overflow-y: auto;
 }
 
+.transport {
+  display: flex;
+  gap: 10px;
+}
+.prev,
+.next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.prev {
+  flex: none;
+  border: 1px solid var(--hairline);
+  background: var(--paper);
+  color: var(--ink-2);
+}
+.prev:hover:not(:disabled) {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.next {
+  flex: 1;
+  border: 1px solid var(--demo);
+  background: var(--demo);
+  color: var(--demo-fg);
+}
+.next:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.prev:disabled,
+.next:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 @media (max-width: 640px) {
   .bar {
     bottom: 12px;
@@ -167,8 +185,5 @@
   }
   .company {
     font-size: 14px;
-  }
-  .detail {
-    max-height: 6em;
   }
 }
