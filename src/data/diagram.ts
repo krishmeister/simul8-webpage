@@ -125,6 +125,7 @@ export const nodes: DiagramNode[] = [
     size: { w: 450, h: 58 },
     color: 'blue',
     title: 'Public authoritative',
+    ai: true,
     subtitle: 'Census, RBI/ABS, calendars, weather',
     fullDescription:
       'Government and statutory sources — census demographics, central-bank / ABS economic releases, official calendars (festivals, holidays) and weather. The most trustworthy, least biased layer of the backdrop.',
@@ -182,6 +183,7 @@ export const nodes: DiagramNode[] = [
     size: { w: 450, h: 58 },
     color: 'green',
     title: 'Expert panel',
+    ai: true,
     subtitle: 'day-zero priors',
     fullDescription:
       'A curated expert panel supplies day-zero priors — informed starting estimates for a category — so the system is useful immediately and is not cold-starting from nothing.',
@@ -204,6 +206,7 @@ export const nodes: DiagramNode[] = [
     size: { w: 450, h: 58 },
     color: 'green',
     title: 'Validated research',
+    ai: true,
     subtitle: 'academic · industry · meta-analysis',
     fullDescription:
       'Peer-reviewed academic work, industry studies and meta-analyses, vetted for the category — the slow-moving but high-confidence evidence base behind the priors.',
@@ -215,6 +218,7 @@ export const nodes: DiagramNode[] = [
     size: { w: 450, h: 58 },
     color: 'green',
     title: 'Competitive structure',
+    ai: true,
     subtitle: 'cohort + panel + ad library',
     fullDescription:
       'A model of the competitive landscape assembled from cohort data, the expert panel and ad-library signals — who the players are, how they behave, and where an operator actually sits.',
@@ -272,6 +276,7 @@ export const nodes: DiagramNode[] = [
     size: { w: 450, h: 58 },
     color: 'amber',
     title: 'AI interview',
+    ai: true,
     subtitle: 'cost, margin, strategic context',
     fullDescription:
       'A structured AI interview captures what a database cannot: cost structure, true margins, and the strategic context and intent behind the numbers — the qualitative layer that reframes the quantitative one.',
@@ -331,6 +336,7 @@ export const nodes: DiagramNode[] = [
     size: { w: 2140, h: 66 },
     color: 'green',
     title: 'Accumulated User Input Data',
+    ai: true,
     subtitle: "the relevant slice of input data + the user's intent",
     fullDescription:
       "What actually enters the orchestrator is not the whole input layer but the relevant slice of it, joined with the user's intent — the specific outcome they are trying to reach. Data plus intent is the unit the rest of the system reasons about.",
@@ -354,7 +360,7 @@ export const nodes: DiagramNode[] = [
     size: { w: 350, h: 120 },
     color: 'amber',
     title: 'Sub-task A — Intent',
-    tag: 'AI · LLM',
+    ai: true,
     subtitle: 'parses the raw request into a structured problem',
     fullDescription:
       'Sub-task A parses the raw natural-language request into a structured problem definition: the type of question, the target variable, the constraints and the time horizon. This is the one place a free LLM is trusted to interpret intent — everything downstream is evidence-governed rather than judgment-governed.',

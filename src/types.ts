@@ -37,7 +37,9 @@ export interface DiagramNode {
   title: string;
   subtitle?: string;
   items?: string[];
-  tag?: string; // e.g. "AI · LLM", "TSFM", "XGBoost"
+  tag?: string; // e.g. "TSFM", "XGBoost", "Moat I"
+  ai?: boolean; // marks a node where the LLM operates -> renders an "AI · LLM" badge
+  tools?: string; // monospace tools/frameworks line (engine cards)
   badge?: string; // e.g. "+ Monte Carlo"
   active?: boolean; // the highlighted "active wedge" (D2C)
   numbered?: boolean; // render items as numbered cards (output layer)

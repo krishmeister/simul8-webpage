@@ -87,6 +87,7 @@ function NodeBody({ node }: { node: DiagramNode }) {
           <div className={styles.barHead}>
             <span className={styles.barTitle}>{node.title}</span>
             {node.subtitle && <span className={styles.barSub}>{node.subtitle}</span>}
+            {node.ai && <span className={styles.aiTag}>AI · LLM</span>}
           </div>
           {node.items && (
             <div className={node.numbered ? styles.cardRow : styles.moveRow}>
@@ -114,6 +115,7 @@ function NodeBody({ node }: { node: DiagramNode }) {
         <div className={styles.sourceBody}>
           <span className={styles.sourceTitle}>{node.title}</span>
           {node.subtitle && <span className={styles.sourceSub}>{node.subtitle}</span>}
+          {node.ai && <span className={styles.sourceAi}>AI · LLM</span>}
         </div>
       );
 
@@ -136,7 +138,11 @@ function NodeBody({ node }: { node: DiagramNode }) {
         <div className={styles.boxBody}>
           <div className={styles.boxHead}>
             <span className={styles.boxTitle}>{node.title}</span>
-            {node.tag && <span className={styles.tag}>{node.tag}</span>}
+            {node.ai ? (
+              <span className={styles.aiTag}>AI · LLM</span>
+            ) : (
+              node.tag && <span className={styles.tag}>{node.tag}</span>
+            )}
           </div>
           {node.subtitle && <span className={styles.boxSub}>{node.subtitle}</span>}
         </div>

@@ -32,6 +32,10 @@
   --calib: #b69bf0;
   --calib-strong: #d2bcff;
 
+  /* AI · LLM marker (distinct from every diagram hue) */
+  --ai: #a5b4fc;
+  --ai-fg: #1b1838;
+
   --blue-surface: #18233b;   --blue-border: #35517f;   --blue-accent: #6fa1f0;   --blue-strong: #cfe0ff;
   --green-surface: #16291e;  --green-border: #2f5a3f;   --green-accent: #57c489;  --green-strong: #c6f0d7;
   --amber-surface: #2b2310;  --amber-border: #5a4920;   --amber-accent: #e0a93a;  --amber-strong: #f6dcab;
@@ -62,6 +66,9 @@
   --flow-strong: #4a463d;
   --calib: #7a4fd0;
   --calib-strong: #5b34b0;
+
+  --ai: #4f46e5;
+  --ai-fg: #ffffff;
 
   --blue-surface: #eef4ff;   --blue-border: #cadcfb;   --blue-accent: #2f63cf;   --blue-strong: #1e3a8a;
   --green-surface: #ecfaf1;  --green-border: #c4ecd3;   --green-accent: #1f9d57;  --green-strong: #14532d;
