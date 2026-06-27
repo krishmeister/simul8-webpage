@@ -17,6 +17,8 @@ interface Props {
   selectedId: string | null;
   focusMode: boolean;
   calibrationMode: boolean;
+  demoMode: boolean;
+  showCalibration: boolean;
   activeNodeIds: Set<string>;
   activeArrowIds: Set<string>;
   onSelect: (id: string) => void;
@@ -84,6 +86,7 @@ export default function Canvas(props: Props) {
               arrows={props.arrows}
               layer="base"
               focusMode={props.focusMode}
+              demoMode={props.demoMode}
               activeArrowIds={props.activeArrowIds}
             />
             {props.nodes.map((n) => (
@@ -91,6 +94,7 @@ export default function Canvas(props: Props) {
                 key={n.id}
                 node={n}
                 focusMode={props.focusMode}
+                demo={props.demoMode}
                 active={props.activeNodeIds.has(n.id)}
                 selected={props.selectedId === n.id}
                 onSelect={props.onSelect}
@@ -100,6 +104,7 @@ export default function Canvas(props: Props) {
               arrows={props.arrows}
               layer="overlay"
               focusMode={props.focusMode}
+              demoMode={props.demoMode}
               activeArrowIds={props.activeArrowIds}
             />
           </div>
@@ -108,6 +113,7 @@ export default function Canvas(props: Props) {
 
       <Controls
         calibrationMode={props.calibrationMode}
+        showCalibration={props.showCalibration}
         onToggleCalibration={props.onToggleCalibration}
         onZoomIn={() => apiRef.current?.zoomIn(0.25)}
         onZoomOut={() => apiRef.current?.zoomOut(0.25)}

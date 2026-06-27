@@ -11,6 +11,7 @@ interface Props {
   arrows: DiagramArrow[];
   layer: 'base' | 'overlay';
   focusMode: boolean;
+  demoMode?: boolean;
   activeArrowIds: Set<string>;
 }
 
@@ -19,7 +20,7 @@ interface Item {
   r: ResolvedArrow;
 }
 
-export default function ArrowLayer({ arrows, layer, focusMode, activeArrowIds }: Props) {
+export default function ArrowLayer({ arrows, layer, focusMode, demoMode, activeArrowIds }: Props) {
   const resolved = useMemo<Item[]>(() => {
     const out: Item[] = [];
     for (const a of arrows) {
@@ -75,6 +76,7 @@ export default function ArrowLayer({ arrows, layer, focusMode, activeArrowIds }:
           isActive ? styles.active : '',
           dim ? styles.dim : '',
           isActive && isCalib ? styles.animated : '',
+          isActive && !isCalib && demoMode ? styles.flowAnimated : '',
         ]
           .filter(Boolean)
           .join(' ');

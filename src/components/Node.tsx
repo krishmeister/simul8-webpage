@@ -7,10 +7,11 @@ interface Props {
   focusMode: boolean;
   active: boolean;
   selected: boolean;
+  demo?: boolean;
   onSelect: (id: string) => void;
 }
 
-function NodeView({ node, focusMode, active, selected, onSelect }: Props) {
+function NodeView({ node, focusMode, active, selected, demo, onSelect }: Props) {
   const interactive = node.interactive !== false;
   const dim = focusMode && !active;
   // group selectors (header / ensemble container) light up as part of the group,
@@ -23,6 +24,7 @@ function NodeView({ node, focusMode, active, selected, onSelect }: Props) {
     node.active ? styles.wedge : '',
     isSelected ? styles.selected : '',
     active && !isSelected ? styles.active : '',
+    demo && active ? styles.demoLit : '',
     dim ? styles.dim : '',
     interactive ? '' : styles.nonInteractive,
   ]

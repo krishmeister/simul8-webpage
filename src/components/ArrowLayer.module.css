@@ -48,6 +48,18 @@
   }
 }
 
+/* demo flow: turn the lit solid connector into a flowing dotted line */
+.flowAnimated {
+  stroke: var(--demo);
+  stroke-dasharray: 3 7;
+  animation: flowMarch 0.7s linear infinite;
+}
+@keyframes flowMarch {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
 /* ---- markers ---- */
 .mFlow path {
   fill: var(--flow);

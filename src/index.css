@@ -36,6 +36,10 @@
   --ai: #a5b4fc;
   --ai-fg: #1b1838;
 
+  /* "See it in action" demo accent */
+  --demo: #6c5cf0;
+  --demo-fg: #ffffff;
+
   --blue-surface: #18233b;   --blue-border: #35517f;   --blue-accent: #6fa1f0;   --blue-strong: #cfe0ff;
   --green-surface: #16291e;  --green-border: #2f5a3f;   --green-accent: #57c489;  --green-strong: #c6f0d7;
   --amber-surface: #2b2310;  --amber-border: #5a4920;   --amber-accent: #e0a93a;  --amber-strong: #f6dcab;
@@ -69,6 +73,9 @@
 
   --ai: #4f46e5;
   --ai-fg: #ffffff;
+
+  --demo: #4f46e5;
+  --demo-fg: #ffffff;
 
   --blue-surface: #eef4ff;   --blue-border: #cadcfb;   --blue-accent: #2f63cf;   --blue-strong: #1e3a8a;
   --green-surface: #ecfaf1;  --green-border: #c4ecd3;   --green-accent: #1f9d57;  --green-strong: #14532d;

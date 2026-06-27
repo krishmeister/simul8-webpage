@@ -52,6 +52,13 @@
   opacity: 0.2;
   filter: saturate(0.7);
 }
+
+/* demo-mode spotlight — stronger than calibration/selection active */
+.node.demoLit {
+  border-color: var(--demo);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--demo) 55%, transparent),
+    0 12px 30px -10px color-mix(in srgb, var(--demo) 60%, transparent);
+}
 .nonInteractive {
   pointer-events: none;
 }

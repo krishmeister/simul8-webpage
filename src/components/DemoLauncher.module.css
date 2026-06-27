@@ -1,0 +1,75 @@
+.launcher {
+  position: fixed;
+  left: 50%;
+  bottom: 80px;
+  transform: translateX(-50%);
+  z-index: 61;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 40px;
+  border: none;
+  background: var(--demo);
+  color: var(--demo-fg);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 30px -8px color-mix(in srgb, var(--demo) 70%, transparent);
+  transition: transform 0.16s ease, box-shadow 0.2s ease;
+  isolation: isolate;
+}
+.launcher:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 16px 38px -8px color-mix(in srgb, var(--demo) 80%, transparent);
+}
+.launcher:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--paper), 0 0 0 6px var(--demo);
+}
+
+/* pulsing glow ring behind the pill */
+.glow {
+  position: absolute;
+  inset: -3px;
+  border-radius: 40px;
+  background: var(--demo);
+  z-index: -1;
+  opacity: 0.55;
+  animation: demoPulse 2.4s ease-in-out infinite;
+}
+@keyframes demoPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0;
+  }
+}
+
+.play {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--demo-fg) 22%, transparent);
+  color: var(--demo-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .launcher {
+    bottom: 74px;
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+}

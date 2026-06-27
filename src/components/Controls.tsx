@@ -2,25 +2,35 @@ import styles from './Controls.module.css';
 
 interface Props {
   calibrationMode: boolean;
+  showCalibration: boolean;
   onToggleCalibration: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onFit: () => void;
 }
 
-export default function Controls({ calibrationMode, onToggleCalibration, onZoomIn, onZoomOut, onFit }: Props) {
+export default function Controls({
+  calibrationMode,
+  showCalibration,
+  onToggleCalibration,
+  onZoomIn,
+  onZoomOut,
+  onFit,
+}: Props) {
   return (
     <>
-      <button
-        type="button"
-        className={`${styles.calib} ${calibrationMode ? styles.calibOn : ''}`}
-        onClick={onToggleCalibration}
-        data-testid="calib-toggle"
-        aria-pressed={calibrationMode}
-      >
-        <span className={styles.dot} aria-hidden="true" />
-        {calibrationMode ? 'Hide calibration loop' : 'Show calibration loop'}
-      </button>
+      {showCalibration && (
+        <button
+          type="button"
+          className={`${styles.calib} ${calibrationMode ? styles.calibOn : ''}`}
+          onClick={onToggleCalibration}
+          data-testid="calib-toggle"
+          aria-pressed={calibrationMode}
+        >
+          <span className={styles.dot} aria-hidden="true" />
+          {calibrationMode ? 'Hide calibration loop' : 'Show calibration loop'}
+        </button>
+      )}
 
       <div className={styles.zoom}>
         <button type="button" onClick={onZoomIn} aria-label="Zoom in" title="Zoom in">
