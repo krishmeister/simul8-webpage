@@ -15,10 +15,15 @@ Built with **Vite + React + TypeScript**, plain **CSS Modules** (no UI framework
 
 - **Pan & zoom like FigJam** — click-drag to pan, scroll/pinch to zoom, with zoom ±, fit-to-screen,
   and a one-finger-drag / pinch experience on touch devices. Opens fit-to-screen by default.
+- **Dark & light themes** — dark by default, sun/moon toggle in the header, persisted to
+  `localStorage`. Every colour (including the six category tints and the arrows) is themed via
+  CSS variables, with WCAG-AA text contrast in both themes.
 - **Click any node** → its connectors light up, everything else dims, and a detail panel opens
-  (a bottom sheet on mobile).
+  with the node's **full description** (a bottom sheet on mobile).
 - **“Show calibration loop”** — the hero button. Highlights and animates the five calibration
-  arrows so the learning loop is unmistakable.
+  arrows — routed around the engine block — so the learning loop is unmistakable.
+- **ESC** returns to the default view: clears selection, turns off the calibration highlight,
+  removes dimming and closes the panel.
 - **Data-driven** — every node and arrow lives in [`src/data/diagram.ts`](src/data/diagram.ts).
   Edit that one file to change the diagram; the views are dumb renderers.
 - **Mobile-first** — tested at 375px; fully explorable by drag/pinch.
@@ -40,6 +45,19 @@ Other scripts:
 npm run build      # type-light production build -> dist/
 npm run preview    # serve the built dist/ locally
 npm run typecheck  # full TypeScript check (tsc --noEmit)
+```
+
+### Browser QA (optional)
+
+A Playwright harness drives the live app and saves annotated screenshots to `.qa/`
+(themes, node detail, the calibration loop, ESC, and 375px mobile):
+
+```bash
+npm install                       # installs playwright (devDependency)
+npx playwright install chromium   # one-time browser download
+npm run dev                       # in one terminal
+node scripts/qa.mjs               # in another — writes .qa/*.png
+node scripts/qa-zoom.mjs          # near-1:1 close-ups for tracing arrows
 ```
 
 ---
