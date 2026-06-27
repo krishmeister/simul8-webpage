@@ -29,7 +29,7 @@ export const nodes: DiagramNode[] = [
   {
     id: 'ind-fmcg',
     variant: 'industry',
-    position: { x: 620, y: 150 },
+    position: { x: 620, y: 128 },
     size: { w: 180, h: 64 },
     title: 'FMCG',
     fullDescription: 'Fast-moving consumer goods — one of the verticals Simul8 can be pointed at.',
@@ -37,7 +37,7 @@ export const nodes: DiagramNode[] = [
   {
     id: 'ind-ecom',
     variant: 'industry',
-    position: { x: 840, y: 150 },
+    position: { x: 840, y: 128 },
     size: { w: 180, h: 64 },
     title: 'E-Commerce',
     fullDescription: 'E-commerce — a candidate vertical for the platform.',
@@ -45,7 +45,7 @@ export const nodes: DiagramNode[] = [
   {
     id: 'ind-d2c',
     variant: 'industry',
-    position: { x: 1060, y: 150 },
+    position: { x: 1060, y: 128 },
     size: { w: 180, h: 64 },
     title: 'D2C',
     active: true,
@@ -56,7 +56,7 @@ export const nodes: DiagramNode[] = [
   {
     id: 'ind-politics',
     variant: 'industry',
-    position: { x: 1280, y: 150 },
+    position: { x: 1280, y: 128 },
     size: { w: 180, h: 64 },
     title: 'Politics',
     fullDescription: 'Politics — a candidate vertical for the platform.',
@@ -64,10 +64,23 @@ export const nodes: DiagramNode[] = [
   {
     id: 'ind-auto',
     variant: 'industry',
-    position: { x: 1500, y: 150 },
+    position: { x: 1500, y: 128 },
     size: { w: 180, h: 64 },
     title: 'Automotive',
     fullDescription: 'Automotive — a candidate vertical for the platform.',
+  },
+
+  // ── Geography (bridge: the active wedge is geography-scoped) ────────────────
+  {
+    id: 'geography',
+    variant: 'bar',
+    position: { x: 1005, y: 214 },
+    size: { w: 290, h: 54 },
+    color: 'slate',
+    title: 'Geography',
+    subtitle: 'India · D2C',
+    fullDescription:
+      'Geography is the bridge between the chosen industry wedge and the data architecture. Everything downstream is geography-scoped: the active deployment is India · D2C. The data, the priors and the calibration are all locality-specific — a model of Indian D2C is not a model of Australian D2C — so scoping by geography is what keeps the context graphs accurate and the calibration meaningful.',
   },
 
   // ── Input Data section (frame + geography header) ──────────────────────────
@@ -552,14 +565,15 @@ export const nodes: DiagramNode[] = [
 
 export const arrows: DiagramArrow[] = [
   // Simul8 -> industries (clean orthogonal bus: down to y130, across, drop into each chip)
-  { id: 'a-s8-fmcg', from: 'simul8', to: 'ind-fmcg', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 130 }, { x: 710, y: 130 }] },
-  { id: 'a-s8-ecom', from: 'simul8', to: 'ind-ecom', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 130 }, { x: 930, y: 130 }] },
-  { id: 'a-s8-d2c', from: 'simul8', to: 'ind-d2c', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 130 }] },
-  { id: 'a-s8-pol', from: 'simul8', to: 'ind-politics', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 130 }, { x: 1370, y: 130 }] },
-  { id: 'a-s8-auto', from: 'simul8', to: 'ind-auto', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 130 }, { x: 1590, y: 130 }] },
+  { id: 'a-s8-fmcg', from: 'simul8', to: 'ind-fmcg', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 120 }, { x: 710, y: 120 }] },
+  { id: 'a-s8-ecom', from: 'simul8', to: 'ind-ecom', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 120 }, { x: 930, y: 120 }] },
+  { id: 'a-s8-d2c', from: 'simul8', to: 'ind-d2c', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 120 }] },
+  { id: 'a-s8-pol', from: 'simul8', to: 'ind-politics', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 120 }, { x: 1370, y: 120 }] },
+  { id: 'a-s8-auto', from: 'simul8', to: 'ind-auto', type: 'flow', fromSide: 'bottom', toSide: 'top', via: [{ x: 1150, y: 120 }, { x: 1590, y: 120 }] },
 
-  // active wedge -> input layer
-  { id: 'a-d2c-geo', from: 'ind-d2c', to: 'input-geo', type: 'flow', fromSide: 'bottom', toSide: 'top', label: 'active wedge', toOffset: 0.5 },
+  // active wedge -> Geography -> input layer
+  { id: 'a-d2c-geo', from: 'ind-d2c', to: 'geography', type: 'flow', fromSide: 'bottom', toSide: 'top', label: 'active wedge' },
+  { id: 'a-geo-input', from: 'geography', to: 'input-geo', type: 'flow', fromSide: 'bottom', toSide: 'top', toOffset: 0.5, label: 'geography-scoped' },
 
   // geography -> the four input components
   { id: 'a-geo-ext', from: 'input-geo', to: 'panel-external', type: 'flow', fromOffset: 0.12, toSide: 'top' },
