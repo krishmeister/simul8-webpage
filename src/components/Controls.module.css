@@ -1,0 +1,97 @@
+/* hero calibration toggle — bottom centre */
+.calib {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 40px;
+  border: 1px solid var(--purple-border);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-hover);
+  transition: transform 0.16s ease, background 0.2s ease, color 0.2s ease;
+}
+.calib:hover {
+  transform: translateX(-50%) translateY(-2px);
+}
+.calib .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--calib);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--calib) 22%, transparent);
+}
+.calibOn {
+  /* --calib and --paper are always opposite in lightness, so this reads in both themes */
+  background: var(--calib);
+  color: var(--paper);
+  border-color: var(--calib);
+}
+.calibOn .dot {
+  background: var(--paper);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--paper) 32%, transparent);
+  animation: pulse 0.9s ease-in-out infinite;
+}
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--paper) 14%, transparent);
+  }
+}
+
+/* zoom cluster — bottom right */
+.zoom {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  box-shadow: var(--shadow-hover);
+  overflow: hidden;
+}
+.zoom button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--ink-2);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.zoom button:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.divider {
+  width: 26px;
+  height: 1px;
+  background: var(--hairline);
+}
+
+@media (max-width: 640px) {
+  .calib {
+    bottom: 18px;
+    font-size: 13px;
+    padding: 11px 16px;
+  }
+  .zoom {
+    right: 14px;
+    bottom: 76px;
+  }
+  .zoom button {
+    width: 42px;
+    height: 42px;
+  }
+}

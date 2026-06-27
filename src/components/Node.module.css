@@ -1,0 +1,385 @@
+/* ------------------------------------------------------------------ */
+/* Per-color tint mapping — drives surface / border / accent / strong. */
+/* `--strong` is the text-grade shade (AA-contrast on `--surface`).    */
+/* ------------------------------------------------------------------ */
+.node[data-color='blue'] { --surface: var(--blue-surface); --border: var(--blue-border); --accent: var(--blue-accent); --strong: var(--blue-strong); }
+.node[data-color='green'] { --surface: var(--green-surface); --border: var(--green-border); --accent: var(--green-accent); --strong: var(--green-strong); }
+.node[data-color='amber'] { --surface: var(--amber-surface); --border: var(--amber-border); --accent: var(--amber-accent); --strong: var(--amber-strong); }
+.node[data-color='purple'] { --surface: var(--purple-surface); --border: var(--purple-border); --accent: var(--purple-accent); --strong: var(--purple-strong); }
+.node[data-color='pink'] { --surface: var(--pink-surface); --border: var(--pink-border); --accent: var(--pink-accent); --strong: var(--pink-strong); }
+.node[data-color='yellow'] { --surface: var(--yellow-surface); --border: var(--yellow-border); --accent: var(--yellow-accent); --strong: var(--yellow-strong); }
+.node[data-color='slate'] { --surface: var(--slate-surface); --border: var(--slate-border); --accent: var(--slate-accent); --strong: var(--slate-strong); }
+.node[data-color='neutral'] { --surface: var(--neutral-surface); --border: var(--neutral-border); --accent: var(--neutral-accent); --strong: var(--neutral-strong); }
+
+/* ------------------------------------------------------------------ */
+/* Base node                                                          */
+/* ------------------------------------------------------------------ */
+.node {
+  position: absolute;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-rest);
+  user-select: none;
+  outline: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.25s ease,
+    border-color 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.node[role='button'] {
+  cursor: pointer;
+}
+.node[role='button']:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent);
+  z-index: 20;
+}
+.node[role='button']:focus-visible {
+  box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--accent);
+}
+
+.active {
+  border-color: var(--accent);
+  box-shadow: 0 6px 22px -10px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent), var(--shadow-hover);
+  z-index: 25 !important;
+}
+.dim {
+  opacity: 0.2;
+  filter: saturate(0.7);
+}
+.nonInteractive {
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Title                                                              */
+/* ------------------------------------------------------------------ */
+.title {
+  background: var(--wordmark-bg);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+}
+.titleBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 34px;
+  letter-spacing: 0.5px;
+  color: var(--wordmark-fg);
+  line-height: 1;
+}
+.titleSub {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--wordmark-fg) 64%, transparent);
+}
+
+/* ------------------------------------------------------------------ */
+/* Industry chips                                                     */
+/* ------------------------------------------------------------------ */
+.industry {
+  display: grid;
+  place-items: center;
+  border-radius: 40px;
+  background: var(--card);
+}
+.industryBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.industryName {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+}
+.wedge {
+  background: var(--amber-surface);
+  border-color: var(--amber-accent);
+  box-shadow: 0 8px 24px -12px color-mix(in srgb, var(--amber-accent) 70%, transparent);
+}
+.wedge .industryName {
+  color: var(--amber-strong);
+}
+.wedgeTag {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--amber-strong);
+  background: color-mix(in srgb, var(--amber-accent) 20%, transparent);
+  padding: 1px 8px;
+  border-radius: 20px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Frame (decorative container)                                       */
+/* ------------------------------------------------------------------ */
+.frame {
+  background: color-mix(in srgb, var(--surface) 42%, transparent);
+  border: 1.5px dashed var(--border);
+  border-radius: 22px;
+  box-shadow: none;
+}
+.frameLabel {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--strong);
+}
+
+/* ------------------------------------------------------------------ */
+/* Bars (accumulated / fusion / output / engine header / geo)        */
+/* ------------------------------------------------------------------ */
+.bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  padding: 14px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.barBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+.barHead {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.barTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.barSub {
+  font-size: 13px;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+/* fusion moves */
+.moveRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.move {
+  background: color-mix(in srgb, var(--card) 66%, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* output cards */
+.cardRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.outCard {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 12px 12px 14px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--ink);
+  font-weight: 500;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.num {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--strong);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+.itemText {
+  display: block;
+}
+
+/* ------------------------------------------------------------------ */
+/* Input panels + sources                                            */
+/* ------------------------------------------------------------------ */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 18px;
+}
+.panelBody {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.panelTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--strong);
+}
+.panelSub {
+  font-size: 12px;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.source {
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 16px;
+}
+.source::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+.sourceBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+}
+.sourceTitle {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+.sourceSub {
+  font-size: 11.5px;
+  color: var(--ink-2);
+  line-height: 1.25;
+}
+
+/* ------------------------------------------------------------------ */
+/* Boxes: orchestrator sub-tasks / engines / vault                   */
+/* ------------------------------------------------------------------ */
+.subbox,
+.engine,
+.vault {
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+}
+.subbox {
+  background: color-mix(in srgb, var(--card) 80%, var(--surface));
+}
+.vault {
+  background: color-mix(in srgb, var(--card) 72%, var(--surface));
+}
+.boxBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+}
+.boxHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.boxTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15.5px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.boxSub {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  line-height: 1.4;
+  font-weight: 500;
+}
+.tag {
+  flex: none;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--strong);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.tagSolid {
+  flex: none;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--surface);
+  background: var(--strong);
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.badge {
+  margin-top: auto;
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--strong);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--accent) 50%, transparent);
+  padding: 3px 9px;
+  border-radius: 8px;
+}
