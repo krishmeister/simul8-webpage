@@ -25,6 +25,7 @@ export type NodeVariant =
   | 'source' // a single source line-item under a panel
   | 'subbox' // orchestrator sub-task boxes
   | 'overlay' // a translucent layer/band spanning a group (the listening layer)
+  | 'group' // a translucent container enclosing a set of nodes (the engine ensemble)
   | 'engine' // prediction & simulation engine card
   | 'vault'; // vault cards (the log / calibration)
 
@@ -42,6 +43,8 @@ export interface DiagramNode {
   tools?: string; // monospace tools/frameworks line (engine cards)
   badge?: string; // e.g. "+ Monte Carlo"
   active?: boolean; // the highlighted "active wedge" (D2C)
+  group?: string; // membership in a selectable group (e.g. the engine ensemble)
+  groupSelect?: boolean; // clicking this node selects/highlights its whole group
   numbered?: boolean; // render items as numbered cards (output layer)
   fullDescription?: string; // the complete paragraph shown in the detail panel
   interactive?: boolean; // false => decorative, ignores clicks (frames)

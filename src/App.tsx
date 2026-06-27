@@ -50,6 +50,15 @@ export default function App() {
   const { activeNodeIds, activeArrowIds } = useMemo(() => {
     const activeNodes = new Set<string>();
     const activeArrows = new Set<string>();
+    const lightArrowsTouchingActiveNodes = () => {
+      for (const a of arrows) {
+        if (activeNodes.has(a.from) || activeNodes.has(a.to)) {
+          activeArrows.add(a.id);
+          activeNodes.add(a.from);
+          activeNodes.add(a.to);
+        }
+      }
+    };
     if (calibrationMode) {
       for (const a of arrows) {
         if (a.type === 'calibration') {
@@ -59,12 +68,19 @@ export default function App() {
         }
       }
     } else if (selectedId) {
-      activeNodes.add(selectedId);
-      for (const a of arrows) {
-        if (a.from === selectedId || a.to === selectedId) {
-          activeArrows.add(a.id);
-          activeNodes.add(a.from);
-          activeNodes.add(a.to);
+      const sel = nodeById.get(selectedId);
+      if (sel?.groupSelect && sel.group) {
+        // group selection: light the whole ensemble + every connector touching it
+        for (const n of nodes) if (n.group === sel.group) activeNodes.add(n.id);
+        lightArrowsTouchingActiveNodes();
+      } else {
+        activeNodes.add(selectedId);
+        for (const a of arrows) {
+          if (a.from === selectedId || a.to === selectedId) {
+            activeArrows.add(a.id);
+            activeNodes.add(a.from);
+            activeNodes.add(a.to);
+          }
         }
       }
     }
@@ -72,7 +88,12 @@ export default function App() {
   }, [selectedId, calibrationMode]);
 
   const focusMode = calibrationMode || selectedId !== null;
-  const selectedNode = selectedId ? nodeById.get(selectedId) ?? null : null;
+  const rawSelected = selectedId ? nodeById.get(selectedId) ?? null : null;
+  // For a group selection, the detail panel shows the group's header description.
+  const selectedNode =
+    rawSelected?.groupSelect && rawSelected.group
+      ? nodes.find((n) => n.group === rawSelected.group && n.variant === 'bar') ?? rawSelected
+      : rawSelected;
 
   return (
     <div className={styles.app}>

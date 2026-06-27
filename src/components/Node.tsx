@@ -13,13 +13,16 @@ interface Props {
 function NodeView({ node, focusMode, active, selected, onSelect }: Props) {
   const interactive = node.interactive !== false;
   const dim = focusMode && !active;
+  // group selectors (header / ensemble container) light up as part of the group,
+  // never with the single-select z-lift that would cover the cards they enclose.
+  const isSelected = selected && !node.groupSelect;
 
   const cls = [
     styles.node,
     styles[node.variant],
     node.active ? styles.wedge : '',
-    selected ? styles.selected : '',
-    active && !selected ? styles.active : '',
+    isSelected ? styles.selected : '',
+    active && !isSelected ? styles.active : '',
     dim ? styles.dim : '',
     interactive ? '' : styles.nonInteractive,
   ]
@@ -80,6 +83,10 @@ function NodeBody({ node }: { node: DiagramNode }) {
 
     case 'frame':
       return node.title ? <span className={styles.frameLabel}>{node.title}</span> : null;
+
+    case 'group':
+      // purely a translucent enclosure; the header inside provides the visible title
+      return null;
 
     case 'bar':
       return (
