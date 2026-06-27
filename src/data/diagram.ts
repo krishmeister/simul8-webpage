@@ -341,7 +341,7 @@ export const nodes: DiagramNode[] = [
     id: 'orch-frame',
     variant: 'frame',
     position: { x: 80, y: 880 },
-    size: { w: 770, h: 480 },
+    size: { w: 770, h: 430 },
     color: 'amber',
     title: 'ORCHESTRATOR',
     interactive: false,
@@ -383,20 +383,21 @@ export const nodes: DiagramNode[] = [
   },
   {
     id: 'listening',
-    variant: 'subbox',
-    position: { x: 110, y: 1232 },
-    size: { w: 350, h: 108 },
-    color: 'amber',
+    variant: 'overlay',
+    position: { x: 100, y: 1230 },
+    size: { w: 730, h: 70 },
+    color: 'slate',
+    z: 3,
     title: 'Listening / Capture Layer',
-    subtitle: 'observes, never steers',
+    subtitle: 'observes everything in the orchestrator · never steers',
     fullDescription:
-      'A passive layer that logs every interaction into a privacy-governed corpus used to train the SLM. It is strictly observational — it captures what happens but never influences the prediction. Observe, never steer.',
+      'The listening layer is not a step in the flow — it is a passive layer running alongside the whole orchestrator. It quietly logs every interaction into a privacy-governed corpus used to train the SLM. It is strictly observational: it captures what happens everywhere above it but never influences the prediction. Observe, never steer.',
   },
   {
     id: 'corpus',
     variant: 'subbox',
-    position: { x: 488, y: 1244 },
-    size: { w: 330, h: 84 },
+    position: { x: 110, y: 1338 },
+    size: { w: 340, h: 64 },
     color: 'amber',
     title: 'SLM Corpus',
     subtitle: 'privacy-governed · trains the SLM',
@@ -625,8 +626,8 @@ export const arrows: DiagramArrow[] = [
   // fusion -> output
   { id: 'a-fusion-out', from: 'fusion', to: 'output', type: 'flow', fromSide: 'bottom', toSide: 'top', fromOffset: 0.5 },
 
-  // listening -> corpus
-  { id: 'a-listen-corpus', from: 'listening', to: 'corpus', type: 'flow', fromSide: 'right', toSide: 'left' },
+  // listening layer -> its corpus
+  { id: 'a-listen-corpus', from: 'listening', to: 'corpus', type: 'flow', fromSide: 'bottom', fromOffset: 0.2, toSide: 'top', toOffset: 0.5 },
 
   // ── Calibration loop (the hero) — routed around the engine block ────────────
   // Calibration -> Sub-task B : up the right channel, across the top, down the left gutter.

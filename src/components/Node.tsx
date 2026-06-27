@@ -117,6 +117,20 @@ function NodeBody({ node }: { node: DiagramNode }) {
         </div>
       );
 
+    case 'overlay':
+      return (
+        <div className={styles.overlayBody}>
+          <span className={styles.overlayIcon} aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+              <path d="M12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+              <path d="M7.5 16.5a6 6 0 0 1 0-9M16.5 7.5a6 6 0 0 1 0 9M4.7 19.3a10 10 0 0 1 0-14.6M19.3 4.7a10 10 0 0 1 0 14.6" />
+            </svg>
+          </span>
+          <span className={styles.overlayLabel}>{node.title}</span>
+          {node.subtitle && <span className={styles.overlaySub}>{node.subtitle}</span>}
+        </div>
+      );
+
     case 'subbox':
       return (
         <div className={styles.boxBody}>

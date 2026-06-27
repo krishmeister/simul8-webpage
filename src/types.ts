@@ -24,6 +24,7 @@ export type NodeVariant =
   | 'panel' // input-data sub-panel header
   | 'source' // a single source line-item under a panel
   | 'subbox' // orchestrator sub-task boxes
+  | 'overlay' // a translucent layer/band spanning a group (the listening layer)
   | 'engine' // prediction & simulation engine card
   | 'vault'; // vault cards (the log / calibration)
 
