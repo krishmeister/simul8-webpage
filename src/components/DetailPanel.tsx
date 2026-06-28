@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import type { DiagramNode } from '../types';
 import styles from './DetailPanel.module.css';
 
@@ -20,22 +21,40 @@ const VARIANT_LABEL: Record<string, string> = {
 
 export default function DetailPanel({ node, calibrationMode, onClose }: Props) {
   const open = calibrationMode || node !== null;
+  // On mobile the calibration explainer is a compact peek sheet so the lit loop
+  // stays visible above it; tapping the grab handle expands it for the full text.
+  // It always (re)opens collapsed.
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    if (calibrationMode) setExpanded(false);
+  }, [calibrationMode]);
 
   return (
     <>
       <div
-        className={`${styles.scrim} ${open ? styles.scrimOpen : ''}`}
+        // No scrim for the calibration peek — the whole point is to keep the
+        // canvas (and its lit loop) visible behind the compact sheet on mobile.
+        className={`${styles.scrim} ${open && !calibrationMode ? styles.scrimOpen : ''}`}
         onClick={onClose}
         aria-hidden="true"
       />
       <aside
-        className={`${styles.panel} ${open ? styles.open : ''} ${calibrationMode ? styles.left : ''}`}
+        className={`${styles.panel} ${open ? styles.open : ''} ${
+          calibrationMode ? `${styles.left} ${styles.calib}` : ''
+        } ${expanded ? styles.expanded : ''}`}
         data-color={calibrationMode ? 'purple' : node?.color ?? 'neutral'}
         role="dialog"
         aria-label="Details"
         aria-hidden={!open}
       >
-        <div className={styles.grab} aria-hidden="true" />
+        <button
+          type="button"
+          className={styles.grab}
+          data-testid="sheet-grab"
+          onClick={() => setExpanded((v) => !v)}
+          aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
+          aria-expanded={expanded}
+        />
         <button type="button" className={styles.close} onClick={onClose} aria-label="Close details">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
             <path d="M4 4l8 8M12 4l-8 8" />

@@ -13,6 +13,9 @@ const WIDTH_FILL = 0.9;
 // edge sits at canvas y=40) is anchored this many px below the reserved header strip.
 const TITLE_TOP_Y = 40;
 const TITLE_GAP = 12;
+// On mobile the calibration explainer docks as a compact peek sheet; reserve this
+// much room at the bottom on the fit so the lit loop is framed clear of it.
+const CALIB_SHEET_PEEK = 210;
 import {
   TransformWrapper,
   TransformComponent,
@@ -61,6 +64,8 @@ export default function Canvas(props: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const demoModeRef = useRef(props.demoMode);
   demoModeRef.current = props.demoMode;
+  const calibModeRef = useRef(props.calibrationMode);
+  calibModeRef.current = props.calibrationMode;
 
   // Smooth-zoom interpolation state. Each wheel/pinch event accumulates a target
   // scale and the screen anchor to hold fixed; an rAF loop eases the live scale
@@ -90,8 +95,11 @@ export default function Canvas(props: Props) {
     const rightInset = demoModeRef.current && vw > 640 ? DEMO_RIGHT_INSET : 0;
     // Always reserve the top strip for the fixed header so the title isn't clipped.
     const topInset = vw > 640 ? HEADER_INSET_DESKTOP : HEADER_INSET_MOBILE;
+    // On mobile, reserve the calibration peek-sheet band so the lit loop frames
+    // above it (desktop docks the explainer to the left and needs no reservation).
+    const calibPeek = calibModeRef.current && vw <= 640 ? CALIB_SHEET_PEEK : 0;
     const avail = vw - rightInset;
-    const availH = vh - topInset;
+    const availH = vh - topInset - calibPeek;
     // Frame to WIDTH so labels read clearly. The diagram may run past the bottom
     // fold on desktop — that's intended; the inviting top is what loads.
     const scale = Math.max(MIN_SCALE, Math.min((avail * WIDTH_FILL) / CANVAS.w, 1.2));
@@ -137,6 +145,17 @@ export default function Canvas(props: Props) {
     }
     fit(true);
   }, [props.demoMode, fit]);
+
+  // On mobile, re-frame when the calibration peek sheet opens/closes so the lit
+  // loop stays clear of it. Desktop's left-docked explainer never covers it.
+  const calibFirst = useRef(true);
+  useEffect(() => {
+    if (calibFirst.current) {
+      calibFirst.current = false;
+      return;
+    }
+    if (window.innerWidth <= 640) fit(true);
+  }, [props.calibrationMode, fit]);
 
   // Figma/trackpad-style gestures. The library's own wheel handling is disabled
   // (wheel.disabled) so we own the wheel: a plain two-finger scroll pans
