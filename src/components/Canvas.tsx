@@ -43,6 +43,10 @@ const ZOOM_SENSITIVITY = 0.01;
 // Cap the per-event multiplicative step so a single coarse mouse ctrl+wheel notch
 // (deltaY ~100) doesn't jump wildly, while a trackpad pinch (small deltas) stays smooth.
 const MAX_ZOOM_STEP = 1.8;
+// Per-frame easing toward the target scale. Each animation frame moves the live
+// scale ZOOM_LERP of the way to the accumulated target, so the zoom glides to a
+// stop (Figma-feel) instead of snapping to every wheel event. ~5–8 frames to settle.
+const ZOOM_LERP = 0.2;
 
 export default function Canvas(props: Props) {
   const apiRef = useRef<ReactZoomPanPinchRef | null>(null);
@@ -50,7 +54,21 @@ export default function Canvas(props: Props) {
   const demoModeRef = useRef(props.demoMode);
   demoModeRef.current = props.demoMode;
 
+  // Smooth-zoom interpolation state. Each wheel/pinch event accumulates a target
+  // scale and the screen anchor to hold fixed; an rAF loop eases the live scale
+  // toward that target so the visible motion glides rather than stepping.
+  const zoomTarget = useRef<{ scale: number; px: number; py: number } | null>(null);
+  const zoomRAF = useRef<number | null>(null);
+
+  const stopZoomAnim = useCallback(() => {
+    if (zoomRAF.current != null) cancelAnimationFrame(zoomRAF.current);
+    zoomRAF.current = null;
+    zoomTarget.current = null;
+  }, []);
+
   const fit = useCallback((animate = true) => {
+    // A programmatic fit/reset must not fight an in-flight zoom ease.
+    stopZoomAnim();
     const api = apiRef.current;
     const el = containerRef.current;
     if (!api || !el) return;
@@ -71,7 +89,7 @@ export default function Canvas(props: Props) {
     const x = (avail - CANVAS.w * scale) / 2;
     const y = topInset + (availH - CANVAS.h * scale) / 2;
     api.setTransform(x, y, scale, animate ? 350 : 0);
-  }, []);
+  }, [stopZoomAnim]);
 
   // Fit to screen once the container has been measured, then on every resize.
   // A ResizeObserver (rather than a one-shot rAF) guarantees the first fit runs
@@ -113,31 +131,64 @@ export default function Canvas(props: Props) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
+    // One eased frame: move the live scale a fraction toward the target while
+    // holding the pointer's content-point fixed on screen. Re-reading the live
+    // transform every frame keeps it pointer-centered and lets a concurrent
+    // two-finger pan compose cleanly.
+    const step = () => {
+      const api = apiRef.current;
+      const tgt = zoomTarget.current;
+      if (!api || !tgt) {
+        zoomRAF.current = null;
+        return;
+      }
+      const { scale, positionX, positionY } = api.instance.transformState;
+      let next = scale + (tgt.scale - scale) * ZOOM_LERP;
+      // Settle: once within a hair of the target, snap and end the loop.
+      if (Math.abs(tgt.scale - next) <= Math.max(0.0006, tgt.scale * 0.004)) {
+        next = tgt.scale;
+      }
+      const cx = (tgt.px - positionX) / scale;
+      const cy = (tgt.py - positionY) / scale;
+      api.setTransform(tgt.px - cx * next, tgt.py - cy * next, next, 0);
+      if (next === tgt.scale) {
+        zoomTarget.current = null;
+        zoomRAF.current = null;
+        return;
+      }
+      zoomRAF.current = requestAnimationFrame(step);
+    };
+
     const onWheel = (e: WheelEvent) => {
       const api = apiRef.current;
       if (!api) return;
       e.preventDefault();
       const { scale, positionX, positionY } = api.instance.transformState;
       if (e.ctrlKey) {
-        // pinch → zoom toward the pointer, keeping that point fixed on screen
+        // pinch → ease zoom toward the pointer, keeping that point fixed on screen
         const rect = el.getBoundingClientRect();
         const px = e.clientX - rect.left;
         const py = e.clientY - rect.top;
         const rawFactor = Math.exp(-e.deltaY * ZOOM_SENSITIVITY);
         const factor = Math.max(1 / MAX_ZOOM_STEP, Math.min(MAX_ZOOM_STEP, rawFactor));
-        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * factor));
-        if (newScale === scale) return;
-        // content point under the cursor, held invariant across the zoom
-        const cx = (px - positionX) / scale;
-        const cy = (py - positionY) / scale;
-        api.setTransform(px - cx * newScale, py - cy * newScale, newScale, 0);
+        // Accumulate onto the pending target (or the live scale if idle) so a
+        // fast/sustained pinch still travels far; the eased step() animates there.
+        const base = zoomTarget.current ? zoomTarget.current.scale : scale;
+        const target = Math.max(MIN_SCALE, Math.min(MAX_SCALE, base * factor));
+        zoomTarget.current = { scale: target, px, py };
+        if (zoomRAF.current == null) zoomRAF.current = requestAnimationFrame(step);
       } else {
-        // two-finger scroll → pan both axes
+        // two-finger scroll → pan both axes (immediate, no easing)
         api.setTransform(positionX - e.deltaX, positionY - e.deltaY, scale, 0);
       }
     };
     el.addEventListener('wheel', onWheel, { passive: false });
-    return () => el.removeEventListener('wheel', onWheel);
+    return () => {
+      el.removeEventListener('wheel', onWheel);
+      if (zoomRAF.current != null) cancelAnimationFrame(zoomRAF.current);
+      zoomRAF.current = null;
+    };
   }, []);
 
   return (
@@ -198,8 +249,14 @@ export default function Canvas(props: Props) {
         showCalibration={props.showCalibration}
         demoMode={props.demoMode}
         onToggleCalibration={props.onToggleCalibration}
-        onZoomIn={() => apiRef.current?.zoomIn(0.25)}
-        onZoomOut={() => apiRef.current?.zoomOut(0.25)}
+        onZoomIn={() => {
+          stopZoomAnim();
+          apiRef.current?.zoomIn(0.25);
+        }}
+        onZoomOut={() => {
+          stopZoomAnim();
+          apiRef.current?.zoomOut(0.25);
+        }}
         onFit={() => fit(true)}
       />
     </div>
