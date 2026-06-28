@@ -5,6 +5,14 @@ const DEMO_RIGHT_INSET = 384;
 // diagram's title + industries row aren't clipped beneath it on the fit.
 const HEADER_INSET_DESKTOP = 104;
 const HEADER_INSET_MOBILE = 84;
+// Fit-on-load framing: fill ~90% of the available width (≈5% padding each side)
+// so the top-level labels are clearly readable, rather than shrinking the whole
+// height to fit everything tiny.
+const WIDTH_FILL = 0.9;
+// When the framed diagram is taller than the viewport, the Simul8 title (whose top
+// edge sits at canvas y=40) is anchored this many px below the reserved header strip.
+const TITLE_TOP_Y = 40;
+const TITLE_GAP = 12;
 import {
   TransformWrapper,
   TransformComponent,
@@ -84,10 +92,19 @@ export default function Canvas(props: Props) {
     const topInset = vw > 640 ? HEADER_INSET_DESKTOP : HEADER_INSET_MOBILE;
     const avail = vw - rightInset;
     const availH = vh - topInset;
-    const raw = Math.min(avail / CANVAS.w, availH / CANVAS.h) * 0.94;
-    const scale = Math.max(MIN_SCALE, Math.min(raw, 1.2));
-    const x = (avail - CANVAS.w * scale) / 2;
-    const y = topInset + (availH - CANVAS.h * scale) / 2;
+    // Frame to WIDTH so labels read clearly. The diagram may run past the bottom
+    // fold on desktop — that's intended; the inviting top is what loads.
+    const scale = Math.max(MIN_SCALE, Math.min((avail * WIDTH_FILL) / CANVAS.w, 1.2));
+    const contentW = CANVAS.w * scale;
+    const contentH = CANVAS.h * scale;
+    // Horizontally centred in the available (left) region.
+    const x = (avail - contentW) / 2;
+    // Taller than the viewport (desktop) → anchor the title just below the header.
+    // Fits within it (mobile) → centre it vertically so it sits balanced.
+    const y =
+      contentH <= availH
+        ? topInset + (availH - contentH) / 2
+        : topInset + TITLE_GAP - TITLE_TOP_Y * scale;
     api.setTransform(x, y, scale, animate ? 350 : 0);
   }, [stopZoomAnim]);
 
