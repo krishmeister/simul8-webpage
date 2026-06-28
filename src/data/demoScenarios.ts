@@ -120,11 +120,15 @@ const COMPONENT_PANEL: Record<string, string> = {
   Linking:  'panel-linking',
 };
 
+// Captions reflect the conceptual model: External/Category/Linking are the
+// STANDING warehouse for the D2C wedge (availability, not selection — known
+// before any question); Product is the one thing legitimately known without the
+// question because the operator provides it directly.
 const COMPONENT_CAPTION: Record<string, string> = {
-  External: 'Reading the external backdrop…',
-  Category: 'Pulling category priors…',
-  Product:  "Reading the operator's own data…",
-  Linking:  'Fusing into one query-time picture…',
+  External: 'What the system already holds for the D2C wedge — refreshed ahead of time, before any question.',
+  Category: 'The category priors the system already holds for the D2C wedge — built up ahead of time, before any question.',
+  Product:  "The operator's own data — provided directly, known without the question.",
+  Linking:  'How the standing sources are pre-fused for the D2C wedge — maintained ahead of time, before any question.',
 };
 
 function buildInputStages(scenarioId: string): FlowStage[] {

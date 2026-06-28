@@ -41,32 +41,61 @@ export interface ClosingStage {
 }
 
 // ----------------------------------------------------------------------------
+// STANDING CONTEXT — the warehouse, shared across all scenarios.
+// External, Category and Linking describe what Simul8 already holds for the D2C
+// wedge (India), ingested and refreshed ahead of time — BEFORE any question. So
+// these are about availability, not selection: every sub-box is `relevant` here
+// (nothing is greyed-by-question at the input stage, because the question isn't
+// known yet). The per-question slice is shown later, at the Accumulate stage.
+// Product is the one exception — it's per-operator (see each scenario below),
+// because the operator provides it directly and it's legitimately known without
+// the question.
+// ----------------------------------------------------------------------------
+
+const STANDING_EXTERNAL: ComponentContribution = {
+  component: "External",
+  summary:
+    "The standing external backdrop for India — official statistics, the festival/holiday calendar, economic-activity signals, prediction markets and licensed feeds — ingested and refreshed continuously, before any question.",
+  subBoxes: [
+    { box: "Public authoritative", relevant: true, contributed: "Government and statutory sources for India — census demographics, RBI releases, official festival/holiday calendars and weather — held and refreshed continuously as the authoritative backdrop any D2C forecast sits inside." },
+    { box: "Economic activity", relevant: true, contributed: "Higher-frequency economic-activity signals — challan traces, per-capita income and spending, and how cohorts form and spend — kept current as a live read on demand." },
+    { box: "Prediction markets", relevant: true, contributed: "Prices from prediction markets (Polymarket, Kalshi) maintained as a standing crowd-probability signal the engines can weigh when a question calls for it." },
+    { box: "Licensed feeds", relevant: true, contributed: "Commercial data held under license (e.g. Bloomberg, Tracxn) — kept available to fill gaps the public and activity layers leave open." },
+  ],
+};
+
+const STANDING_CATEGORY: ComponentContribution = {
+  component: "Category",
+  summary:
+    "The standing category knowledge for the D2C wedge — day-zero priors, compounding cohort data, validated research and a competitive-structure read — built up and maintained ahead of time, before any operator asks anything.",
+  subBoxes: [
+    { box: "Expert panel", relevant: true, contributed: "A curated expert panel's day-zero priors for D2C categories — informed starting estimates the system holds so it can say something useful from the very first question." },
+    { box: "Helium-ish tool", relevant: true, contributed: "Anonymized cohort data from comparable Indian D2C operators, compounding over time — a standing instrument whose priors sharpen as more operators contribute." },
+    { box: "Validated research", relevant: true, contributed: "Peer-reviewed academic work, industry studies and meta-analyses vetted for D2C categories — the slow-moving, high-confidence evidence base kept on hand." },
+    { box: "Competitive structure", relevant: true, contributed: "A maintained read of the competitive landscape — assembled from cohort data, the expert panel and ad-library signals — describing who the players are and how they behave." },
+  ],
+};
+
+const STANDING_LINKING: ComponentContribution = {
+  component: "Linking",
+  summary:
+    "How the standing sources are pre-fused into one query-time picture — the join layer that combines External backdrop, Category priors and Product data, engineered ahead of time as a reusable recipe.",
+  subBoxes: [
+    { box: "Fuses the three sources", relevant: true, contributed: "The standing join that combines External backdrop, Category priors and Product data into one coherent picture — the substrate every engine reads from." },
+    { box: "Pre-built recipe", relevant: true, contributed: "The linking structure is maintained ahead of time as a reusable recipe — relationships between sources engineered in advance, not improvised per query." },
+    { box: "Applied live", relevant: true, contributed: "At query time the pre-built recipe is applied to the operator's freshest data and fused on demand — so the unified picture is always current." },
+  ],
+};
+
+// ----------------------------------------------------------------------------
 // SCENARIO 1 — Loudmouth Co. (Gen-Z oversized tees)
 // ----------------------------------------------------------------------------
 
 const input_tees: InputDetail = {
   scenarioId: "tees",
   components: [
-    {
-      component: "External",
-      summary: "Festive timing and apparel seasonality — the macro backdrop for a Diwali question.",
-      subBoxes: [
-        { box: "Public authoritative", relevant: true, contributed: "The Diwali festive calendar (exact dates, the run-up window) and apparel demand seasonality from macro retail indicators — establishing that this is a high-attention, high-spend window." },
-        { box: "Economic activity", relevant: false, contributed: "" },
-        { box: "Prediction markets", relevant: false, contributed: "" },
-        { box: "Licensed feeds", relevant: false, contributed: "" },
-      ],
-    },
-    {
-      component: "Category",
-      summary: "Gen-Z streetwear price behavior — the priors for how this category responds to a discount.",
-      subBoxes: [
-        { box: "Expert panel", relevant: true, contributed: "Day-zero priors from D2C apparel operators on how Gen-Z streetwear responds to festive discounts — the starting elasticity range before Loudmouth's own data refines it." },
-        { box: "Helium-ish tool", relevant: true, contributed: "Anonymized cohort data from comparable Indian apparel operators — how similar brands' discounts converted during past festive windows." },
-        { box: "Validated research", relevant: true, contributed: "Peer-reviewed price-elasticity studies for apparel; the meta-analysis sub-source supplied a pre-weighted elasticity of ≈ −1.4 for discretionary fashion." },
-        { box: "Competitive structure", relevant: false, contributed: "" },
-      ],
-    },
+    STANDING_EXTERNAL,
+    STANDING_CATEGORY,
     {
       component: "Product",
       summary: "Loudmouth's own selling history — what makes the answer specific to them.",
@@ -77,15 +106,7 @@ const input_tees: InputDetail = {
         { box: "AI interview", relevant: true, contributed: "Riya's margin floor on the tees — confirming a 15% cut is survivable and what break-even units look like at the new price." },
       ],
     },
-    {
-      component: "Linking",
-      summary: "Fuses the festive backdrop, the category elasticity priors, and Loudmouth's own conversion history into one query-time picture the engines can act on.",
-      subBoxes: [
-        { box: "Fuses the three sources", relevant: true, contributed: "Combined External seasonality + Category elasticity priors + Loudmouth's own festive history into a single coherent input for this specific question." },
-        { box: "Pre-built recipe", relevant: true, contributed: "The standing structure for how apparel-pricing inputs combine — maintained ahead of time, not built per query." },
-        { box: "Applied live", relevant: true, contributed: "Loudmouth's fresh numbers fused with the stored priors at query time to produce their specific forecast." },
-      ],
-    },
+    STANDING_LINKING,
   ],
 };
 
@@ -109,26 +130,8 @@ const closing_tees: ClosingStage = {
 const input_protein: InputDetail = {
   scenarioId: "protein",
   components: [
-    {
-      component: "External",
-      summary: "Light touch — a channel-mix question doesn't lean on seasonal or macro data.",
-      subBoxes: [
-        { box: "Public authoritative", relevant: false, contributed: "" },
-        { box: "Economic activity", relevant: false, contributed: "" },
-        { box: "Prediction markets", relevant: false, contributed: "" },
-        { box: "Licensed feeds", relevant: false, contributed: "" },
-      ],
-    },
-    {
-      component: "Category",
-      summary: "Channel-substitution priors and CAC benchmarks for D2C supplements.",
-      subBoxes: [
-        { box: "Expert panel", relevant: true, contributed: "Operator priors on how supplement brands' acquisition behaves when spend moves between Meta and Google." },
-        { box: "Helium-ish tool", relevant: true, contributed: "Cohort data on channel mix and CAC across comparable D2C supplement brands." },
-        { box: "Validated research", relevant: true, contributed: "Validated channel-substitution studies — how cross-channel reallocation typically affects acquisition cost and quality." },
-        { box: "Competitive structure", relevant: false, contributed: "" },
-      ],
-    },
+    STANDING_EXTERNAL,
+    STANDING_CATEGORY,
     {
       component: "Product",
       summary: "Macrofuel's own channel performance and retention — the heart of this answer.",
@@ -139,15 +142,7 @@ const input_protein: InputDetail = {
         { box: "AI interview", relevant: true, contributed: "Arjun's true per-subscriber economics and his goal (lifetime value, not raw acquisition count) — which reframes what 'success' means for this question." },
       ],
     },
-    {
-      component: "Linking",
-      summary: "Fuses the category channel-substitution priors with Macrofuel's own channel-and-retention data — the combination that surfaces the quality-vs-quantity trade-off.",
-      subBoxes: [
-        { box: "Fuses the three sources", relevant: true, contributed: "Combined Category CAC priors + Macrofuel's channel performance + its retention-by-source curve into one picture." },
-        { box: "Pre-built recipe", relevant: true, contributed: "The standing structure for channel-reallocation inputs." },
-        { box: "Applied live", relevant: true, contributed: "Macrofuel's current channel numbers fused with priors at query time." },
-      ],
-    },
+    STANDING_LINKING,
   ],
 };
 
@@ -171,26 +166,8 @@ const closing_protein: ClosingStage = {
 const input_sneakers: InputDetail = {
   scenarioId: "sneakers",
   components: [
-    {
-      component: "External",
-      summary: "Launch-timing and attention signals for a hype drop.",
-      subBoxes: [
-        { box: "Public authoritative", relevant: true, contributed: "Launch-window timing and attention/seasonality signals — when a drop lands matters for the frenzy." },
-        { box: "Economic activity", relevant: false, contributed: "" },
-        { box: "Prediction markets", relevant: false, contributed: "" },
-        { box: "Licensed feeds", relevant: false, contributed: "" },
-      ],
-    },
-    {
-      component: "Category",
-      summary: "Bundle economics and hype-drop sell-through behavior.",
-      subBoxes: [
-        { box: "Expert panel", relevant: true, contributed: "Operator priors on how hype buyers respond to bundles — the qualitative read that socks may cool a sneaker-focused frenzy." },
-        { box: "Helium-ish tool", relevant: true, contributed: "Cohort sell-through data for Indian hype/limited sneaker drops — how fast comparable drops cleared." },
-        { box: "Validated research", relevant: true, contributed: "Bundle-economics and decoy-pricing research — how bundling shifts average order value; the academic sub-source supplied the AOV-lift mechanics." },
-        { box: "Competitive structure", relevant: false, contributed: "" },
-      ],
-    },
+    STANDING_EXTERNAL,
+    STANDING_CATEGORY,
     {
       component: "Product",
       summary: "Aksh's own drop history — the sell-through curves that anchor the simulation.",
@@ -201,15 +178,7 @@ const input_sneakers: InputDetail = {
         { box: "AI interview", relevant: true, contributed: "Devika's bundle margin and her two success metrics — total revenue AND sell-through speed — which frame the trade-off the answer must address." },
       ],
     },
-    {
-      component: "Linking",
-      summary: "Fuses bundle-economics priors with Aksh's own drop curves and the fixed stock ceiling — the combination that exposes the revenue-vs-speed tension.",
-      subBoxes: [
-        { box: "Fuses the three sources", relevant: true, contributed: "Combined bundle/AOV priors + Aksh's drop history + the limited-stock constraint into one input." },
-        { box: "Pre-built recipe", relevant: true, contributed: "The standing structure for launch/bundle questions." },
-        { box: "Applied live", relevant: true, contributed: "Aksh's drop specifics fused with priors at query time." },
-      ],
-    },
+    STANDING_LINKING,
   ],
 };
 
@@ -233,26 +202,8 @@ const closing_sneakers: ClosingStage = {
 const input_tws: InputDetail = {
   scenarioId: "tws",
   components: [
-    {
-      component: "External",
-      summary: "Minimal seasonal dependence — but competitive context matters, sourced via Category.",
-      subBoxes: [
-        { box: "Public authoritative", relevant: false, contributed: "" },
-        { box: "Economic activity", relevant: false, contributed: "" },
-        { box: "Prediction markets", relevant: false, contributed: "" },
-        { box: "Licensed feeds", relevant: false, contributed: "" },
-      ],
-    },
-    {
-      component: "Category",
-      summary: "Value-TWS elasticity AND the competitive-structure read — this question's biggest unknown is the rival.",
-      subBoxes: [
-        { box: "Expert panel", relevant: true, contributed: "Operator priors on how value-TWS buyers respond to a price rise and how rivals typically react to a competitor raising prices." },
-        { box: "Helium-ish tool", relevant: true, contributed: "Cohort data on value-electronics price sensitivity across comparable D2C brands." },
-        { box: "Validated research", relevant: true, contributed: "Price-elasticity studies for value consumer electronics — the demand-drop mechanics for a +20% move." },
-        { box: "Competitive structure", relevant: true, contributed: "THE critical input here: assembled competitor pricing and promo patterns (from cohort data, the expert panel, and ad-library signals) — the read that a rival is likely to discount into Pulsebeat's price gap." },
-      ],
-    },
+    STANDING_EXTERNAL,
+    STANDING_CATEGORY,
     {
       component: "Product",
       summary: "Pulsebeat's sales, AND its inventory reality — the constraint that turns into an unexpected upside.",
@@ -263,15 +214,7 @@ const input_tws: InputDetail = {
         { box: "AI interview", relevant: true, contributed: "Kabir's true COGS and margin (so the per-unit margin gain is real, not assumed), his stock constraints, and his explicit flag that a competitor discount is likely — the human context no API exposes." },
       ],
     },
-    {
-      component: "Linking",
-      summary: "Fuses elasticity priors, the competitor read, Pulsebeat's sales, and the inventory ceiling into one picture — the richest fusion of the four scenarios, because the question has the most moving parts.",
-      subBoxes: [
-        { box: "Fuses the three sources", relevant: true, contributed: "Combined Category elasticity + competitive-structure read + Pulsebeat's sales + inventory constraint into one coherent, multi-factor input." },
-        { box: "Pre-built recipe", relevant: true, contributed: "The standing structure for price-change-with-constraints questions." },
-        { box: "Applied live", relevant: true, contributed: "Pulsebeat's specifics fused with priors and the competitor assumption at query time." },
-      ],
-    },
+    STANDING_LINKING,
   ],
 };
 
