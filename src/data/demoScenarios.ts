@@ -207,7 +207,7 @@ const scenario1: Scenario = {
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Loudmouth's relevant data is merged with Riya's intent: she wants a unit-sales forecast for a 15% price cut over the Diwali window. That's the structured starting point.",
+        "Now that the question is understood — a festive pricing forecast — the system pulls the relevant slice from the warehouse: festive-seasonality and the apparel calendar from External, Gen-Z streetwear elasticity and the comparable-apparel cohort from Category, and Loudmouth's own Shopify history from Product. It leaves the rest of the warehouse untouched — this question doesn't need prediction-market or licensed-feed data. The slice, plus Riya's intent, is what moves forward.",
     },
     {
       stage: "subtaskA",
@@ -317,7 +317,7 @@ const scenario2: Scenario = {
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Macrofuel's channel data merges with Arjun's intent: he wants the effect on new-subscriber acquisition of moving ₹3L from Meta to Google over next quarter.",
+        "Now that the question is understood — a channel-reallocation question — the system pulls the relevant slice: channel-substitution priors and CAC benchmarks from Category, and Macrofuel's own channel-and-retention data from Product. Notably, it pulls NOTHING from External — a channel-mix question has no seasonal or macro dependency. This is the system selecting by question, not by habit: the warehouse holds external data, but this question doesn't call for it.",
     },
     {
       stage: "subtaskA",
@@ -426,7 +426,7 @@ const scenario3: Scenario = {
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Aksh's drop history merges with Devika's intent: compare bundle at −10% vs separate on two metrics — total revenue and sell-through speed — for the next limited drop.",
+        "Now that the question is understood — a bundle-launch question for a hype drop — the system pulls launch-timing from External, bundle-economics and hype-drop cohort data from Category, and Aksh's own drop history and the fixed stock ceiling from Product. It leaves aside the parts of the warehouse a bundle question doesn't need. The slice plus Devika's intent moves forward.",
     },
     {
       stage: "subtaskA",
@@ -534,7 +534,7 @@ const scenario4: Scenario = {
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Pulsebeat's data merges with Kabir's intent and his two constraints: he wants the revenue effect of +₹500 (20%) over a quarter, explicitly accounting for inventory limits and a likely competitor discount.",
+        "Now that the question is understood — a price rise with a competitive and inventory dimension — the system pulls the richest slice of the four: value-TWS elasticity AND the competitive-structure read from Category, and Pulsebeat's sales plus its inventory constraint from Product. This question pulls more from the warehouse than the others because it has the most moving parts — the competitor response and the inventory ceiling both matter. The slice plus Kabir's intent moves forward.",
     },
     {
       stage: "subtaskA",
