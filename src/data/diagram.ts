@@ -90,8 +90,10 @@ export const nodes: DiagramNode[] = [
   {
     id: 'input-frame',
     variant: 'frame',
+    // Height extended (470 -> 504) to contain the Category column's 5th sub-box
+    // (Cohort Aggregation) without disturbing anything below the frame.
     position: { x: 80, y: 280 },
-    size: { w: 2140, h: 470 },
+    size: { w: 2140, h: 504 },
     color: 'neutral',
     title: '',
     interactive: false,
@@ -225,6 +227,23 @@ export const nodes: DiagramNode[] = [
     subtitle: 'cohort + panel + ad library',
     fullDescription:
       'A model of the competitive landscape assembled from cohort data, the expert panel and ad-library signals — who the players are, how they behave, and where an operator actually sits.',
+  },
+  {
+    // The 5th Category prior (Moat III). It is a member of Category — it produces
+    // category priors and feeds predictions natively — so it lives in this column,
+    // not as a detached box. The Anonymize & Aggregate processor (right side) is
+    // what populates it; see the cohort arrows below.
+    id: 'cohort-agg',
+    variant: 'source',
+    position: { x: 660, y: 710 },
+    size: { w: 450, h: 58 },
+    color: 'green',
+    title: 'Cohort Aggregation',
+    tag: 'Moat III',
+    subtitle: 'the compounding category-knowledge layer',
+    kicker: 'Category knowledge',
+    fullDescription:
+      "The compounding category-knowledge layer (Moat III). Pooled, anonymized cohort patterns from every operator's data and every resolved outcome — “brands in this cohort look like X and tend to see Y.” Sharpens the priors that feed every operator's prediction.",
   },
 
   // Product Data (amber) ------------------------------------------------------
@@ -598,30 +617,16 @@ export const nodes: DiagramNode[] = [
       'The output has four layers. 1 — The Outcome: the answer with its uncertainty band, confidence and maturity label; necessary, but table stakes. 2 — The Journey: the full reasoning rendered as an explorable canvas — the moat made visible, because anyone can show a number but few can show their work honestly. 3 — Interrogate & Adjust: chat and sliders that re-run the engines, turning a static report into a thinking tool. 4 — Share It: export to PDF, slides or image — the finishing layer that gets the answer in front of others.',
   },
 
-  // ── Cohort loop (Moat III) — the second compounding loop, right-hand column ──
-  // Cohort Aggregation sits above its processor: pooled, anonymized cohort
-  // patterns that feed back into the Category priors. The Anonymize & Aggregate
-  // box below it is where operator data is turned into those patterns — an LLM
-  // only on extraction, a deterministic step for the privacy guarantee.
-  {
-    id: 'cohort-agg',
-    variant: 'subbox',
-    position: { x: 2330, y: 362 },
-    size: { w: 350, h: 150 },
-    color: 'green',
-    title: 'Cohort Aggregation',
-    tag: 'Moat III',
-    tagStyle: 'solid',
-    subtitle: 'the compounding category-knowledge layer',
-    kicker: 'Category knowledge',
-    fullDescription:
-      "The compounding category-knowledge layer (Moat III). Pooled, anonymized cohort patterns from every operator's data and every resolved outcome — “brands in this cohort look like X and tend to see Y.” Sharpens the priors that feed every operator's prediction. The Helium-ish tool is one of its inputs.",
-  },
+  // ── Cohort loop — the Anonymize & Aggregate processor ───────────────────────
+  // Off to the right: turns raw operator data (plus Helium-ish cohort data,
+  // noted in the copy) into anonymized cohort patterns, then deposits them into
+  // the Cohort Aggregation prior that lives inside the Category column above. An
+  // LLM only on extraction; a deterministic step makes the privacy guarantee.
   {
     id: 'anon-aggregate',
     variant: 'subbox',
-    position: { x: 2330, y: 556 },
-    size: { w: 350, h: 170 },
+    position: { x: 2330, y: 650 },
+    size: { w: 350, h: 160 },
     color: 'green',
     title: 'Anonymize & Aggregate',
     subtitle: 'raw operator data → shareable cohort patterns',
@@ -631,7 +636,7 @@ export const nodes: DiagramNode[] = [
       { text: 'deterministic · anonymization', kind: 'solid' },
     ],
     fullDescription:
-      "Turns operators' raw data into shareable cohort patterns. An LLM extracts structure from the unstructured declarations (the AI-interview and Ask-the-User text); then a deterministic, auditable step strips identity and rolls individuals up to cohort level. No individual operator is identifiable, and no operator can see another's data.",
+      "Turns operators' raw data into shareable cohort patterns. Raw cohort data also flows in from the Helium-ish tool (the free Shopify tool), alongside operators' own data and resolved outcomes. An LLM extracts structure from the unstructured declarations (the AI-interview and Ask-the-User text); then a deterministic, auditable step strips identity and rolls individuals up to cohort level. No individual operator is identifiable, and no operator can see another's data.",
   },
 ];
 
@@ -662,6 +667,7 @@ export const arrows: DiagramArrow[] = [
   { id: 'a-cat-2', from: 'panel-category', to: 'src-cat-2', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-cat-3', from: 'panel-category', to: 'src-cat-3', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-cat-4', from: 'panel-category', to: 'src-cat-4', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
+  { id: 'a-cat-5', from: 'panel-category', to: 'cohort-agg', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-prod-1', from: 'panel-product', to: 'src-prod-1', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-prod-2', from: 'panel-product', to: 'src-prod-2', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-prod-3', from: 'panel-product', to: 'src-prod-3', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
@@ -670,8 +676,8 @@ export const arrows: DiagramArrow[] = [
   { id: 'a-link-2', from: 'panel-linking', to: 'src-link-2', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-link-3', from: 'panel-linking', to: 'src-link-3', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
 
-  // input data -> accumulated input
-  { id: 'a-input-accum', from: 'input-frame', to: 'accumulated', type: 'flow', fromSide: 'bottom', toSide: 'top' },
+  // input data -> accumulated input (short hop now the frame is taller; gentle curve)
+  { id: 'a-input-accum', from: 'input-frame', to: 'accumulated', type: 'flow', fromSide: 'bottom', toSide: 'top', curve: 0.3 },
 
   // accumulated -> orchestrator
   { id: 'a-accum-a', from: 'accumulated', to: 'subtask-a', type: 'flow', fromOffset: 0.1, toSide: 'top' },
@@ -816,11 +822,14 @@ export const arrows: DiagramArrow[] = [
     labelPos: { x: 2090, y: 1150 },
   },
 
-  // ── Cohort loop (the second compounding loop) — teal, routed in the right column ──
-  // operator data + declared gaps + resolved outcomes -> Anonymize & Aggregate
-  // -> Cohort Aggregation -> back into the Category priors.
+  // ── Cohort loop (the second compounding loop) — teal ───────────────────────
+  // Linear, no loop-back: Product + Ask-the-User + resolved Outcomes (+ Helium-ish
+  // cohort data, in the copy) -> Anonymize & Aggregate -> the Cohort Aggregation
+  // prior that lives inside the Category column (which then feeds predictions
+  // natively, like every other Category sub-box).
 
-  // Product Data -> Anonymize : the operator's own four sources.
+  // Product Data -> Anonymize : the operator's own four sources (down the
+  // Product/Linking gutter, then into Anonymize's left).
   {
     id: 'co-prod-anon',
     from: 'panel-product',
@@ -828,17 +837,17 @@ export const arrows: DiagramArrow[] = [
     type: 'cohort',
     fromSide: 'right',
     toSide: 'left',
-    toOffset: 0.4,
+    toOffset: 0.25,
     label: 'operator data (all four sources)',
-    labelPos: { x: 2010, y: 700 },
+    labelPos: { x: 2010, y: 678 },
     via: [
       { x: 1700, y: 400 },
-      { x: 1700, y: 712 },
-      { x: 2300, y: 712 },
-      { x: 2300, y: 624 },
+      { x: 1700, y: 690 },
+      { x: 2300, y: 690 },
     ],
   },
-  // Ask the User -> Anonymize : the declared gap-fills (out the orch/engine gutter, over the top).
+  // Ask the User -> Anonymize : the declared gap-fills (out the orch/engine gutter,
+  // along the channel above the engines, up into Anonymize's bottom).
   {
     id: 'co-ask-anon',
     from: 'ask-user',
@@ -846,78 +855,49 @@ export const arrows: DiagramArrow[] = [
     type: 'cohort',
     fromSide: 'right',
     toSide: 'bottom',
-    toOffset: 0.66,
+    toOffset: 0.2,
     label: 'declared gap-fills',
-    labelPos: { x: 1180, y: 860 },
+    labelPos: { x: 1150, y: 860 },
     via: [
       { x: 839, y: 999 },
       { x: 839, y: 869 },
-      { x: 2560, y: 869 },
+      { x: 2400, y: 869 },
     ],
   },
-  // Output -> Anonymize : the same resolved outcome that feeds Calibration, branching here too.
+  // Output -> Anonymize : the same resolved outcome that feeds Calibration. Exits
+  // Output's top-right beside the Output->Calibration arrows so the signal visibly
+  // branches to both loops, then up the far-right gutter into Anonymize's bottom.
   {
     id: 'co-out-anon',
     from: 'output',
     to: 'anon-aggregate',
     type: 'cohort',
-    fromSide: 'right',
-    fromOffset: 0.32,
+    fromSide: 'top',
+    fromOffset: 0.99,
     toSide: 'bottom',
-    toOffset: 0.31,
+    toOffset: 0.66,
     label: 'what actually happened',
-    labelPos: { x: 2470, y: 1300 },
+    labelPos: { x: 2590, y: 1250 },
     labelAnchor: 'start',
     via: [
-      { x: 2440, y: 1701 },
-      { x: 2440, y: 726 },
+      { x: 2199, y: 1612 },
+      { x: 2560, y: 1612 },
     ],
   },
-  // Anonymize -> Cohort Aggregation : the anonymized cohort patterns (short hop up).
+  // Anonymize -> Cohort Aggregation : deposits the anonymized cohort patterns into
+  // the Category prior. Clean near-horizontal into the box's right side (its panel
+  // connector enters the left), routed through the empty lower-frame band.
   {
     id: 'co-anon-agg',
     from: 'anon-aggregate',
     to: 'cohort-agg',
     type: 'cohort',
-    fromSide: 'top',
-    toSide: 'bottom',
+    fromSide: 'left',
+    fromOffset: 0.556,
+    toSide: 'right',
+    toOffset: 0.5,
     label: 'anonymized cohort patterns',
-    labelPos: { x: 2540, y: 534 },
-    labelAnchor: 'start',
-  },
-  // Helium-ish tool -> Cohort Aggregation : the existing cohort-data tool is one of its inputs.
-  {
-    id: 'co-helium-agg',
-    from: 'src-cat-2',
-    to: 'cohort-agg',
-    type: 'cohort',
-    fromSide: 'right',
-    toSide: 'left',
-    toOffset: 0.5,
-    label: 'cohort data',
-    labelPos: { x: 1700, y: 726 },
-    via: [
-      { x: 1160, y: 541 },
-      { x: 1160, y: 736 },
-      { x: 2280, y: 736 },
-      { x: 2280, y: 437 },
-    ],
-  },
-  // Cohort Aggregation -> Category Data : enriches the priors, closing the loop (sweeps the top).
-  {
-    id: 'co-agg-cat',
-    from: 'cohort-agg',
-    to: 'panel-category',
-    type: 'cohort',
-    fromSide: 'top',
-    toSide: 'top',
-    toOffset: 0.5,
-    label: 'enriches the category priors',
-    labelPos: { x: 1640, y: 264 },
-    via: [
-      { x: 2505, y: 274 },
-      { x: 885, y: 274 },
-    ],
+    labelPos: { x: 1750, y: 728 },
   },
 ];
 
