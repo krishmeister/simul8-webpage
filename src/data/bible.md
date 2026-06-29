@@ -55,6 +55,7 @@ How the category (D2C) actually behaves. The hardest component to get, because i
 - **The Helium-ish tool** — a free Shopify tool that gives operators genuine standalone value, and in return yields anonymized, user-end cohort data. Pooled across many operators, this becomes the compounding category-knowledge layer feeding research and calibration. Distribution and data acquisition in one.
 - **Validated research** *(uses LLM for extraction)* — peer-reviewed studies on D2C pricing elasticities, channel-substitution, and return-rate behavior, filtered through a Research Validation Pipeline on four criteria (reproducibility, consistency, context fit, effect-size magnitude). The citable, empirical complement to expert gut. Sub-sources: academic databases (Google Scholar, SSRN, NBER, arXiv), industry research (McKinsey/BCG/Bain, Shopify/Meta/Stripe benchmarks, Redseer/Bain-Flipkart/Avendus), and meta-analyses (the highest-value target — pre-weighted effect sizes across many studies).
 - **Competitive / market-structure data** *(uses LLM for extraction)* — who the players are, pricing bands, promo patterns, concentration. Assembled from the system's own cohort data, the expert panel, and ad-library data. Mostly a convergence of sources already held.
+- **Cohort Aggregation (the compounding layer — Moat III)** — pooled, anonymized cohort patterns drawn from every operator's own data and every resolved outcome: "brands in this cohort look like X, and tend to see Y when they do Z." This is the layer that makes the category warehouse compound. Where the expert panel and validated research are largely fixed at day zero, Cohort Aggregation gets richer every time an operator runs a prediction and every time an outcome resolves — so the priors that feed every future prediction sharpen continuously. It is populated by the Anonymize & Aggregate mechanism (see "The Cohort Loop" section), with the Helium-ish tool as one of its raw collection sources. This is Moat III — the context graph — made literal: a proprietary, continuously-deepening category model no competitor can buy or back-fill, because it only comes into existence by running the platform across many operators over time.
 
 ### 2.3 Product Data — *the operator's own reality*
 
@@ -79,7 +80,7 @@ A note on how the data is sourced overall: it is a **continuously-maintained war
 
 ## 3. Accumulated User Input Data
 
-The merge point. It holds the **relevant slice** of the four-component input data *plus* the user's intent (what outcome they want). Not all the data — the filtered slice the specific question needs. It accumulates from two sources: automatic feeds pour in structured data, and the orchestrator's gap-filling loop tops it up with conversationally-elicited data. This is the running, growing state that feeds the orchestrator.
+The merge point. It holds the **relevant slice** of the four-component input data *plus* the user's intent (what outcome they want). Not all the data — the filtered slice the specific question needs. It accumulates from two sources: automatic feeds pour in structured data, and the orchestrator's gap-filling loop tops it up with conversationally-elicited data. This is the running, growing state that feeds the orchestrator. Crucially, this selection happens here, after Intent Inference has parsed the question — not before. The warehouse holds the full standing context for the category ahead of time; the system only knows which slice to pull once it understands what is being asked. So the warehouse is about availability (held continuously, before any question), and this stage is about selection (the relevant slice, chosen once the question is understood).
 
 ---
 
@@ -196,7 +197,35 @@ Outcome capture is automatic for Tier A operators (read from Shopify/Razorpay fe
 
 ---
 
-## 9. Where the LLM Is — and Isn't
+## 9. The Cohort Loop — The Second Compounding Engine
+
+Simul8 has two loops that compound, not one. They are easy to conflate, but they sharpen different things — and together they are why the system gets better the more it is used.
+
+- **The calibration loop** (the Vault, above) grades predictions against resolved outcomes and updates the weights — how much each engine is trusted for each question-type. It makes the system's judgment sharper.
+- **The cohort loop** (this section) pools operators' data and resolved outcomes into anonymized category knowledge and updates the priors — what the system believes about a category before it predicts. It makes the system's knowledge richer.
+
+One sharpens how much to trust each method; the other sharpens what the methods reason from. Both feed off the same resolved outcomes, and both are moats.
+
+### Anonymize & Aggregate — the privacy-governed gateway
+
+Raw operator data cannot be shared — it is the operator's private reality. So the cohort loop runs everything through a single mechanism, Anonymize & Aggregate, that turns private data into shareable cohort patterns. It does two distinct jobs, and the boundary between them is deliberate and load-bearing:
+
+- **Extraction (LLM).** Much of what an operator declares is unstructured natural language — the AI interview, and the Ask-the-User gap-fills when Intent Inference finds the input under-specified ("our margin floor is around 40%, we can't reorder faster than three weeks"). An LLM extracts structure from that messy text into cohort-able fields. This is consistent with the system's one rule for language models: they live at the edges, doing extraction, never inference.
+- **Anonymization (deterministic, no LLM).** Stripping identity and rolling individuals up to cohort level is a deterministic, auditable operation — programmed rules, not a language model. This is non-negotiable: a privacy guarantee must be provable, and an LLM is a black box you cannot certify. The same logic that keeps calibration LLM-free keeps anonymization LLM-free — anything that is a guarantee must be auditable, not generated. No individual operator is ever identifiable, and no operator can ever see another's data.
+
+So the LLM touches the parsing, never the privacy guarantee. On the architecture diagram this is why the box carries two distinct badges — "AI · LLM · extraction" and "deterministic · anonymization" — rather than one.
+
+### What flows through it
+
+Anonymize & Aggregate receives three streams: Product Data (the operator's own reality across all four sources — commerce, marketing, operations, and the AI interview); Ask-the-User declarations (the additional facts an operator supplies when Intent Inference routes back for missing information — only the category-general facts are cohort-relevant, not the operator's private strategic intent for a specific decision); and resolved outcomes (what actually happened). That resolved-outcome stream is the same signal that feeds calibration — it branches to both loops, because an outcome both grades the prediction (weights) and enriches the category knowledge (priors). Raw cohort data also flows in from the Helium-ish tool — the free Shopify tool whose entire purpose is to gather anonymized, user-end cohort data at the source. The output is a single stream of anonymized cohort patterns into Cohort Aggregation, which lives inside the Category layer and feeds the priors of every future prediction.
+
+### Why this is the second moat
+
+The calibration log (Moat I) proves the system's honesty; the cohort loop builds the context graph (Moat III). Neither can be bought or back-filled. A competitor with a better language model still has no resolved-outcome record and no pooled, consented, anonymized operator data — and both of those only accrue by running the platform, across many operators, over time. The longer Simul8 runs, the deeper both loops cut, and the harder the whole thing is to catch.
+
+---
+
+## 10. Where the LLM Is — and Isn't
 
 The single most important architectural boundary. The LLM lives **only at the edges**:
 
@@ -209,18 +238,19 @@ The single most important architectural boundary. The LLM lives **only at the ed
 | Multi-Method Fusion | **No** | Pure math — weighting, agreement-check, combination |
 | Calibration | **No** | Pure math — grading and weight updates |
 | Output | **Yes** | Narration only — renders computed results into language; never infers |
+| Cohort aggregation — Anonymize & Aggregate | Split | LLM for extraction of unstructured declarations; deterministic, no LLM for anonymization and aggregation — the privacy guarantee must be auditable |
 
 The hollow, LLM-free middle — where the actual predicting and grading happen — is the architecture. It is what lets Simul8 tell a regulator or a CFO: "the answer was computed by auditable statistics, not generated by a language model." The Agent-Based engine is the one to guard hardest — its agents must be drawn from statistical distributions, never from LLM-generated personas, or the system becomes the very confident-hallucination tool it is built to beat.
 
 ---
 
-## 10. The Moats
+## 11. The Moats
 
 Five moats, in order of defensibility:
 
 1. **The Calibration Log (Moat I).** A time-indexed, cryptographically anchored, publicly auditable record of predictions and outcomes. Cannot be bought, hired, or trained — it only comes into existence by running the platform over time. The primary moat; everything else compounds because this exists.
 2. **The Research Validation Pipeline (Moat II).** The curated, weighted research corpus and the discipline of its four-criterion filter. Institutional IP, not model IP.
-3. **The Context Graphs (Moat III).** Locality-specific structured category knowledge, built from authoritative data and corrected by resolved outcomes. Takes years of on-the-ground effort; cannot be bought past.
+3. **The Context Graphs (Moat III).** Locality-specific structured category knowledge, built from authoritative data and deepened continuously by the cohort loop — pooled, anonymized operator data and resolved outcomes aggregated into ever-sharper category priors (see "The Cohort Loop"). Takes years of on-the-ground effort and many operators' worth of accumulated, consented data; cannot be bought or back-filled.
 4. **Workflow Lock-in (Moat IV).** Versioned scenarios, decision histories, team annotations — depth that lives in the operator's own accumulated work.
 5. **Scenario Memory (Moat V).** Cross-scenario precedent retrieval against the system's own history.
 
@@ -231,7 +261,7 @@ Capability gains in frontier LLMs flow into the system as *better input quality*
 
 ---
 
-## 11. The Through-Line
+## 12. The Through-Line
 
 Because prediction is niche-by-niche and needs *wired-up* data, Simul8 builds four data components (External, Category, Product, Linking), feeds them through an orchestrator that routes each question, fires a subset of seven calibrated engines, distills their answers in a fusion layer weighted by proven trust, and grades every outcome in a tamper-evident log that re-teaches the whole system. The same engine sits under every industry; reach is the sum of conquered niches, not a global launch. And the one thing that makes it all defensible — the calibration log — is the one thing that can only be earned by running, never bought.
 
