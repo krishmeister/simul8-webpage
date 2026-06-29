@@ -29,6 +29,15 @@ export type NodeVariant =
   | 'engine' // prediction & simulation engine card
   | 'vault'; // vault cards (the log / calibration)
 
+// A small pill rendered in a node's badge row. `kind` picks the visual style:
+//   ai    -> the unified "AI · LLM" marker (same colour everywhere the LLM operates)
+//   solid -> a solid, high-contrast badge (e.g. "deterministic", like the no-LLM marker)
+//   soft  -> a soft tinted pill (the default tag look)
+export interface NodeBadge {
+  text: string;
+  kind: 'ai' | 'solid' | 'soft';
+}
+
 export interface DiagramNode {
   id: string;
   variant: NodeVariant;
@@ -39,6 +48,8 @@ export interface DiagramNode {
   subtitle?: string;
   items?: string[];
   tag?: string; // e.g. "TSFM", "XGBoost", "Moat I"
+  tagStyle?: 'soft' | 'solid'; // head-tag rendering for subboxes (default soft); 'solid' matches the vault's Moat badge
+  badges?: NodeBadge[]; // a row of small pills under the subtitle (e.g. the split AI/deterministic badge)
   ai?: boolean; // marks a node where the LLM operates -> renders an "AI · LLM" badge
   tools?: string; // monospace tools/frameworks line (engine cards)
   badge?: string; // e.g. "+ Monte Carlo"
@@ -46,12 +57,15 @@ export interface DiagramNode {
   group?: string; // membership in a selectable group (e.g. the engine ensemble)
   groupSelect?: boolean; // clicking this node selects/highlights its whole group
   numbered?: boolean; // render items as numbered cards (output layer)
+  kicker?: string; // overrides the detail-panel kicker label (default derives from variant)
   fullDescription?: string; // the complete paragraph shown in the detail panel
   interactive?: boolean; // false => decorative, ignores clicks (frames)
   z?: number; // stacking order
 }
 
-export type ArrowType = 'flow' | 'calibration';
+// 'flow' = the always-on data flow. 'calibration' (purple) and 'cohort' (teal) are
+// the two compounding loops — each dashed, faint at rest, lit by its own toggle.
+export type ArrowType = 'flow' | 'calibration' | 'cohort';
 
 export interface Point {
   x: number;

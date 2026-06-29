@@ -1,6 +1,23 @@
 import { memo } from 'react';
-import type { DiagramNode } from '../types';
+import type { DiagramNode, NodeBadge } from '../types';
 import styles from './Node.module.css';
+
+// A row of small pills (e.g. the split "AI · LLM (extraction)" / "deterministic
+// (anonymization)" badge). Each pill is styled by its kind so the LLM marker
+// always looks like the LLM marker, and the deterministic one reads as no-LLM.
+function BadgeRow({ badges }: { badges: NodeBadge[] }) {
+  const cls = (kind: NodeBadge['kind']) =>
+    kind === 'ai' ? styles.aiTag : kind === 'solid' ? styles.tagSolid : styles.tag;
+  return (
+    <div className={styles.badgeRow}>
+      {badges.map((b, i) => (
+        <span key={i} className={cls(b.kind)}>
+          {b.text}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 interface Props {
   node: DiagramNode;
@@ -156,10 +173,15 @@ function NodeBody({ node, demoDimmed }: { node: DiagramNode; demoDimmed?: boolea
             {node.ai ? (
               <span className={styles.aiTag}>AI · LLM</span>
             ) : (
-              node.tag && <span className={styles.tag}>{node.tag}</span>
+              node.tag && (
+                <span className={node.tagStyle === 'solid' ? styles.tagSolid : styles.tag}>
+                  {node.tag}
+                </span>
+              )
             )}
           </div>
           {node.subtitle && <span className={styles.boxSub}>{node.subtitle}</span>}
+          {node.badges && <BadgeRow badges={node.badges} />}
         </div>
       );
 

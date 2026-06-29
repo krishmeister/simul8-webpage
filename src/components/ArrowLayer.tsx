@@ -63,33 +63,39 @@ export default function ArrowLayer({ arrows, layer, focusMode, demoMode, activeA
           markerWidth="16" markerHeight="16" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
           <path d="M0.5,0.8 L9.2,5 L0.5,9.2 Z" />
         </marker>
+        <marker id={m('ah-cohort')} className={styles.mCohort} viewBox="0 0 10 10" refX="8.5" refY="5"
+          markerWidth="14" markerHeight="14" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+          <path d="M0.5,0.8 L9.2,5 L0.5,9.2 Z" />
+        </marker>
+        <marker id={m('ah-cohort-active')} className={styles.mCohortActive} viewBox="0 0 10 10" refX="8.5" refY="5"
+          markerWidth="16" markerHeight="16" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+          <path d="M0.5,0.8 L9.2,5 L0.5,9.2 Z" />
+        </marker>
       </defs>
 
       {items.map(({ a, r }) => {
         const isActive = activeArrowIds.has(a.id);
         const isCalib = a.type === 'calibration';
+        const isCohort = a.type === 'cohort';
+        const isLoop = isCalib || isCohort; // both compounding loops: dashed, labels-on-highlight
         const dim = focusMode && !isActive;
 
+        const typeClass = isCalib ? styles.calib : isCohort ? styles.cohort : styles.flow;
         const pathClass = [
           styles.path,
-          isCalib ? styles.calib : styles.flow,
+          typeClass,
           isActive ? styles.active : '',
           dim ? styles.dim : '',
-          isActive && isCalib ? styles.animated : '',
-          isActive && !isCalib && demoMode ? styles.flowAnimated : '',
+          isActive && isLoop ? styles.animated : '',
+          isActive && !isLoop && demoMode ? styles.flowAnimated : '',
         ]
           .filter(Boolean)
           .join(' ');
 
-        const markerEnd = isActive
-          ? isCalib
-            ? `url(#${m('ah-calib-active')})`
-            : `url(#${m('ah-flow-active')})`
-          : isCalib
-            ? `url(#${m('ah-calib')})`
-            : `url(#${m('ah-flow')})`;
+        const markerBase = isCalib ? 'ah-calib' : isCohort ? 'ah-cohort' : 'ah-flow';
+        const markerEnd = `url(#${m(isActive ? `${markerBase}-active` : markerBase)})`;
 
-        // Flow labels show in the resting view; calibration-loop labels appear only when the loop is highlighted.
+        // Flow labels show in the resting view; loop labels appear only when their loop is highlighted.
         const showLabel =
           !!a.label && (layer === 'overlay' ? true : !focusMode && a.type === 'flow');
         const lp = a.labelPos ?? r.mid;
@@ -103,7 +109,12 @@ export default function ArrowLayer({ arrows, layer, focusMode, demoMode, activeA
               <text
                 x={lx}
                 y={lp.y}
-                className={[styles.label, isCalib ? styles.labelCalib : '', isActive ? styles.labelActive : '']
+                className={[
+                  styles.label,
+                  isCalib ? styles.labelCalib : '',
+                  isCohort ? styles.labelCohort : '',
+                  isActive ? styles.labelActive : '',
+                ]
                   .filter(Boolean)
                   .join(' ')}
                 textAnchor={anchor}

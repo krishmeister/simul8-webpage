@@ -27,12 +27,24 @@
   stroke-dasharray: 7 6;
   opacity: 0.85;
 }
+.cohort {
+  stroke: var(--cohort);
+  stroke-width: 2.4px;
+  /* a distinct dash rhythm from calibration's 7 6, so the two loops read apart even before colour registers */
+  stroke-dasharray: 2 6;
+  opacity: 0.85;
+}
 .active.flow {
   stroke: var(--flow-strong);
   stroke-width: 3px;
 }
 .active.calib {
   stroke: var(--calib-strong);
+  stroke-width: 3.4px;
+  opacity: 1;
+}
+.active.cohort {
+  stroke: var(--cohort-strong);
   stroke-width: 3.4px;
   opacity: 1;
 }
@@ -44,7 +56,16 @@
 }
 @keyframes marchAndPulse {
   to {
-    stroke-dashoffset: -52;
+    stroke-dashoffset: -52; /* multiple of calibration's 7+6 dash period */
+  }
+}
+/* cohort uses a 2 6 dash, so march a multiple of its 8px period to avoid a seam */
+.cohort.animated {
+  animation: marchCohort 0.9s linear infinite;
+}
+@keyframes marchCohort {
+  to {
+    stroke-dashoffset: -48;
   }
 }
 
@@ -73,6 +94,12 @@
 .mCalibActive path {
   fill: var(--calib-strong);
 }
+.mCohort path {
+  fill: var(--cohort);
+}
+.mCohortActive path {
+  fill: var(--cohort-strong);
+}
 
 /* ---- labels ---- */
 .label {
@@ -89,10 +116,16 @@
 .labelCalib {
   fill: var(--calib-strong);
 }
+.labelCohort {
+  fill: var(--cohort-strong);
+}
 .labelActive {
   fill: var(--ink);
   font-weight: 700;
 }
 .labelActive.labelCalib {
   fill: var(--calib-strong);
+}
+.labelActive.labelCohort {
+  fill: var(--cohort-strong);
 }

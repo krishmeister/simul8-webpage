@@ -465,6 +465,16 @@
   border-radius: 8px;
 }
 
+/* A row of small badges under a box subtitle (e.g. the split AI / deterministic badge) */
+.badgeRow {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+}
+
 /* AI · LLM marker — unified across every tagged node, distinct from the tints */
 .aiTag {
   flex: none;
