@@ -1,40 +1,65 @@
-/* hero calibration toggle — bottom centre */
-.calib {
+/* the two loop toggles — bottom centre, side by side (two toggles, two loops) */
+.loopToggles {
   position: fixed;
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%);
   z-index: 60;
+  display: flex;
+  gap: 10px;
+}
+.toggle {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   padding: 12px 20px;
   border-radius: 40px;
-  border: 1px solid var(--purple-border);
+  border: 1px solid var(--hairline);
   background: var(--card);
   color: var(--ink);
   font-size: 14px;
   font-weight: 600;
   box-shadow: var(--shadow-hover);
-  transition: transform 0.16s ease, background 0.2s ease, color 0.2s ease;
+  transition: transform 0.16s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
-.calib:hover {
-  transform: translateX(-50%) translateY(-2px);
+.toggle:hover {
+  transform: translateY(-2px);
 }
-.calib .dot {
+.toggle .dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+}
+
+/* per-loop resting accent (border + dot) */
+.calib {
+  border-color: var(--purple-border);
+}
+.calib .dot {
   background: var(--calib);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--calib) 22%, transparent);
 }
-.calibOn {
-  /* --calib and --paper are always opposite in lightness, so this reads in both themes */
-  background: var(--calib);
+.cohort {
+  border-color: color-mix(in srgb, var(--cohort) 55%, var(--hairline));
+}
+.cohort .dot {
+  background: var(--cohort);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--cohort) 22%, transparent);
+}
+
+/* lit state — each loop fills with its own colour; --paper text reads in both themes */
+.on {
   color: var(--paper);
+}
+.calib.on {
+  background: var(--calib);
   border-color: var(--calib);
 }
-.calibOn .dot {
+.cohort.on {
+  background: var(--cohort);
+  border-color: var(--cohort);
+}
+.on .dot {
   background: var(--paper);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--paper) 32%, transparent);
   animation: pulse 0.9s ease-in-out infinite;
@@ -86,8 +111,14 @@
 }
 
 @media (max-width: 640px) {
-  .calib {
+  /* stack the two pills so they fit a narrow screen */
+  .loopToggles {
     bottom: 18px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .toggle {
     font-size: 13px;
     padding: 11px 16px;
   }

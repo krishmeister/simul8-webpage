@@ -20,6 +20,10 @@ export default function Legend() {
         <span className={styles.calibLine} aria-hidden="true" />
         <span className={styles.label}>Calibration loop</span>
       </div>
+      <div className={styles.row}>
+        <span className={styles.cohortLine} aria-hidden="true" />
+        <span className={styles.label}>Cohort loop</span>
+      </div>
       <span className={styles.rule} aria-hidden="true" />
       <div className={styles.tints}>
         {TINTS.map((t) => (

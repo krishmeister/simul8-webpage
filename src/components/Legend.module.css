@@ -31,6 +31,12 @@
   border-top: 2.5px dashed var(--calib);
   flex: none;
 }
+.cohortLine {
+  width: 30px;
+  height: 0;
+  border-top: 2.5px dashed var(--cohort);
+  flex: none;
+}
 .label {
   font-size: 12px;
   font-weight: 600;

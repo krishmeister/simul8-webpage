@@ -34,14 +34,17 @@ interface Props {
   selectedId: string | null;
   focusMode: boolean;
   calibrationMode: boolean;
+  cohortMode: boolean;
   demoMode: boolean;
   showCalibration: boolean;
+  showCohort: boolean;
   activeNodeIds: Set<string>;
   activeArrowIds: Set<string>;
   dimmedNodeIds: Set<string>;
   onSelect: (id: string) => void;
   onClear: () => void;
   onToggleCalibration: () => void;
+  onToggleCohort: () => void;
 }
 
 const MIN_SCALE = 0.08;
@@ -64,8 +67,9 @@ export default function Canvas(props: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const demoModeRef = useRef(props.demoMode);
   demoModeRef.current = props.demoMode;
-  const calibModeRef = useRef(props.calibrationMode);
-  calibModeRef.current = props.calibrationMode;
+  // Either loop's mobile peek sheet reserves the same bottom band on the fit.
+  const peekModeRef = useRef(props.calibrationMode || props.cohortMode);
+  peekModeRef.current = props.calibrationMode || props.cohortMode;
 
   // Smooth-zoom interpolation state. Each wheel/pinch event accumulates a target
   // scale and the screen anchor to hold fixed; an rAF loop eases the live scale
@@ -95,9 +99,9 @@ export default function Canvas(props: Props) {
     const rightInset = demoModeRef.current && vw > 640 ? DEMO_RIGHT_INSET : 0;
     // Always reserve the top strip for the fixed header so the title isn't clipped.
     const topInset = vw > 640 ? HEADER_INSET_DESKTOP : HEADER_INSET_MOBILE;
-    // On mobile, reserve the calibration peek-sheet band so the lit loop frames
-    // above it (desktop docks the explainer to the left and needs no reservation).
-    const calibPeek = calibModeRef.current && vw <= 640 ? CALIB_SHEET_PEEK : 0;
+    // On mobile, reserve the loop peek-sheet band so the lit loop frames above it
+    // (desktop docks the explainer to the left and needs no reservation).
+    const calibPeek = peekModeRef.current && vw <= 640 ? CALIB_SHEET_PEEK : 0;
     const avail = vw - rightInset;
     const availH = vh - topInset - calibPeek;
     // Frame to WIDTH so labels read clearly. The diagram may run past the bottom
@@ -146,16 +150,16 @@ export default function Canvas(props: Props) {
     fit(true);
   }, [props.demoMode, fit]);
 
-  // On mobile, re-frame when the calibration peek sheet opens/closes so the lit
+  // On mobile, re-frame when either loop's peek sheet opens/closes so the lit
   // loop stays clear of it. Desktop's left-docked explainer never covers it.
-  const calibFirst = useRef(true);
+  const peekFirst = useRef(true);
   useEffect(() => {
-    if (calibFirst.current) {
-      calibFirst.current = false;
+    if (peekFirst.current) {
+      peekFirst.current = false;
       return;
     }
     if (window.innerWidth <= 640) fit(true);
-  }, [props.calibrationMode, fit]);
+  }, [props.calibrationMode, props.cohortMode, fit]);
 
   // Figma/trackpad-style gestures. The library's own wheel handling is disabled
   // (wheel.disabled) so we own the wheel: a plain two-finger scroll pans
@@ -282,9 +286,12 @@ export default function Canvas(props: Props) {
 
       <Controls
         calibrationMode={props.calibrationMode}
+        cohortMode={props.cohortMode}
         showCalibration={props.showCalibration}
+        showCohort={props.showCohort}
         demoMode={props.demoMode}
         onToggleCalibration={props.onToggleCalibration}
+        onToggleCohort={props.onToggleCohort}
         onZoomIn={() => {
           stopZoomAnim();
           apiRef.current?.zoomIn(0.25);

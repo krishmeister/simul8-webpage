@@ -5,6 +5,7 @@ import styles from './DetailPanel.module.css';
 interface Props {
   node: DiagramNode | null;
   calibrationMode: boolean;
+  cohortMode: boolean;
   onClose: () => void;
 }
 
@@ -19,30 +20,31 @@ const VARIANT_LABEL: Record<string, string> = {
   vault: 'The Vault',
 };
 
-export default function DetailPanel({ node, calibrationMode, onClose }: Props) {
-  const open = calibrationMode || node !== null;
-  // On mobile the calibration explainer is a compact peek sheet so the lit loop
-  // stays visible above it; tapping the grab handle expands it for the full text.
+export default function DetailPanel({ node, calibrationMode, cohortMode, onClose }: Props) {
+  const loopMode = calibrationMode || cohortMode;
+  const open = loopMode || node !== null;
+  // On mobile a loop explainer is a compact peek sheet so the lit loop stays
+  // visible above it; tapping the grab handle expands it for the full text.
   // It always (re)opens collapsed.
   const [expanded, setExpanded] = useState(false);
   useEffect(() => {
-    if (calibrationMode) setExpanded(false);
-  }, [calibrationMode]);
+    if (loopMode) setExpanded(false);
+  }, [loopMode]);
 
   return (
     <>
       <div
-        // No scrim for the calibration peek — the whole point is to keep the
-        // canvas (and its lit loop) visible behind the compact sheet on mobile.
-        className={`${styles.scrim} ${open && !calibrationMode ? styles.scrimOpen : ''}`}
+        // No scrim for a loop peek — the whole point is to keep the canvas
+        // (and its lit loop) visible behind the compact sheet on mobile.
+        className={`${styles.scrim} ${open && !loopMode ? styles.scrimOpen : ''}`}
         onClick={onClose}
         aria-hidden="true"
       />
       <aside
         className={`${styles.panel} ${open ? styles.open : ''} ${
-          calibrationMode ? `${styles.left} ${styles.calib}` : ''
+          loopMode ? `${styles.left} ${styles.loop}` : ''
         } ${expanded ? styles.expanded : ''}`}
-        data-color={calibrationMode ? 'purple' : node?.color ?? 'neutral'}
+        data-color={calibrationMode ? 'purple' : cohortMode ? 'cohort' : node?.color ?? 'neutral'}
         role="dialog"
         aria-label="Details"
         aria-hidden={!open}
@@ -81,6 +83,29 @@ export default function DetailPanel({ node, calibrationMode, onClose }: Props) {
             <p className={styles.foot}>
               Calibration then compares predicted vs. actual, regrades accuracy and honesty, and
               updates the weights — so the next prediction is routed and fused better than the last.
+            </p>
+          </div>
+        ) : cohortMode ? (
+          <div className={styles.body}>
+            <span className={styles.kicker}>The second compounding loop</span>
+            <h2 className={styles.title}>The Cohort Aggregation Loop</h2>
+            <p className={styles.lede}>
+              The calibration loop sharpens <i>weights</i>; this one sharpens <i>priors</i>. Every
+              operator's data, anonymized and pooled to cohort level, enriches the Category warehouse
+              for everyone — highlighted on the canvas now.
+            </p>
+            <ul className={styles.loopList}>
+              <li><b>Product Data → Anonymize &amp; Aggregate</b> — the operator's own four sources.</li>
+              <li><b>Ask the User → Anonymize &amp; Aggregate</b> — their declared gap-fills.</li>
+              <li><b>Output → Anonymize &amp; Aggregate</b> — the same resolved outcome that feeds Calibration, branching here too.</li>
+              <li><b>Anonymize &amp; Aggregate → Cohort Aggregation</b> — anonymized cohort patterns.</li>
+              <li><b>Helium-ish tool → Cohort Aggregation</b> — the existing cohort-data tool, as one input.</li>
+              <li><b>Cohort Aggregation → Category Data</b> — enriches the priors every prediction starts from.</li>
+            </ul>
+            <p className={styles.foot}>
+              An LLM only touches extraction; a deterministic, auditable step makes the privacy
+              guarantee. No individual operator is identifiable, and no operator sees another's data —
+              yet everyone's predictions get sharper as the pool grows. That is Moat III.
             </p>
           </div>
         ) : node ? (

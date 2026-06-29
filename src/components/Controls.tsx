@@ -2,9 +2,12 @@ import styles from './Controls.module.css';
 
 interface Props {
   calibrationMode: boolean;
+  cohortMode: boolean;
   showCalibration: boolean;
+  showCohort: boolean;
   demoMode: boolean;
   onToggleCalibration: () => void;
+  onToggleCohort: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onFit: () => void;
@@ -12,26 +15,45 @@ interface Props {
 
 export default function Controls({
   calibrationMode,
+  cohortMode,
   showCalibration,
+  showCohort,
   demoMode,
   onToggleCalibration,
+  onToggleCohort,
   onZoomIn,
   onZoomOut,
   onFit,
 }: Props) {
   return (
     <>
-      {showCalibration && (
-        <button
-          type="button"
-          className={`${styles.calib} ${calibrationMode ? styles.calibOn : ''}`}
-          onClick={onToggleCalibration}
-          data-testid="calib-toggle"
-          aria-pressed={calibrationMode}
-        >
-          <span className={styles.dot} aria-hidden="true" />
-          {calibrationMode ? 'Hide calibration loop' : 'Show calibration loop'}
-        </button>
+      {(showCalibration || showCohort) && (
+        <div className={styles.loopToggles}>
+          {showCalibration && (
+            <button
+              type="button"
+              className={`${styles.toggle} ${styles.calib} ${calibrationMode ? styles.on : ''}`}
+              onClick={onToggleCalibration}
+              data-testid="calib-toggle"
+              aria-pressed={calibrationMode}
+            >
+              <span className={styles.dot} aria-hidden="true" />
+              {calibrationMode ? 'Hide calibration loop' : 'Show calibration loop'}
+            </button>
+          )}
+          {showCohort && (
+            <button
+              type="button"
+              className={`${styles.toggle} ${styles.cohort} ${cohortMode ? styles.on : ''}`}
+              onClick={onToggleCohort}
+              data-testid="cohort-toggle"
+              aria-pressed={cohortMode}
+            >
+              <span className={styles.dot} aria-hidden="true" />
+              {cohortMode ? 'Hide cohort loop' : 'Show cohort loop'}
+            </button>
+          )}
+        </div>
       )}
 
       <div className={`${styles.zoom} ${demoMode ? styles.zoomDemo : ''}`}>

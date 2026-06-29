@@ -28,6 +28,7 @@ function arrowNodeSet(set: Set<string>): Set<string> {
 export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [calibrationMode, setCalibrationMode] = useState(false);
+  const [cohortMode, setCohortMode] = useState(false);
   const [bibleOpen, setBibleOpen] = useState(false);
 
   const [demoPhase, setDemoPhase] = useState<DemoPhase>('off');
@@ -47,26 +48,38 @@ export default function App() {
       if (demoPhase !== 'off') return; // demo mode owns the highlight
       setSelectedId((cur) => (cur === id ? null : id));
       setCalibrationMode(false);
+      setCohortMode(false);
     },
     [demoPhase],
   );
 
   const clearSelection = useCallback(() => setSelectedId(null), []);
 
+  // The two loop highlights are mutually exclusive: lighting one clears the other
+  // (and any node selection), so only one loop is ever emphasised at a time.
   const toggleCalibration = useCallback(() => {
     setCalibrationMode((v) => !v);
+    setCohortMode(false);
+    setSelectedId(null);
+  }, []);
+
+  const toggleCohort = useCallback(() => {
+    setCohortMode((v) => !v);
+    setCalibrationMode(false);
     setSelectedId(null);
   }, []);
 
   const closePanel = useCallback(() => {
     setSelectedId(null);
     setCalibrationMode(false);
+    setCohortMode(false);
   }, []);
 
   // ── Demo controls ──────────────────────────────────────────────────────────
   const openDemoPicker = useCallback(() => {
     setSelectedId(null);
     setCalibrationMode(false);
+    setCohortMode(false);
     setBibleOpen(false);
     setDemoPhase('picker');
   }, []);
@@ -102,6 +115,7 @@ export default function App() {
         setBibleOpen(false);
         setSelectedId(null);
         setCalibrationMode(false);
+        setCohortMode(false);
         setDemoPhase('off');
         setDemoStage(0);
         setDemoScenarioId(null);
@@ -155,9 +169,10 @@ export default function App() {
         }
       }
     };
-    if (calibrationMode) {
+    if (calibrationMode || cohortMode) {
+      const loopType = calibrationMode ? 'calibration' : 'cohort';
       for (const a of arrows) {
-        if (a.type === 'calibration') {
+        if (a.type === loopType) {
           activeArrows.add(a.id);
           activeNodes.add(a.from);
           activeNodes.add(a.to);
@@ -180,7 +195,7 @@ export default function App() {
       }
     }
     return { activeNodeIds: activeNodes, activeArrowIds: activeArrows };
-  }, [selectedId, calibrationMode, demoPhase, demoStage, demoScenario]);
+  }, [selectedId, calibrationMode, cohortMode, demoPhase, demoStage, demoScenario]);
 
   // Which nodes should render greyed/"not used" (deliberate demo dimming, separate from focus-mode dim).
   const dimmedNodeIds = useMemo(() => {
@@ -196,7 +211,7 @@ export default function App() {
 
   const demoMode = demoPhase === 'playing';
   const demoOutputOpen = demoMode && demoScenario?.flow[demoStage]?.stage === 'output';
-  const focusMode = calibrationMode || selectedId !== null || demoMode;
+  const focusMode = calibrationMode || cohortMode || selectedId !== null || demoMode;
   const rawSelected = selectedId ? nodeById.get(selectedId) ?? null : null;
   const selectedNode =
     rawSelected?.groupSelect && rawSelected.group
@@ -212,17 +227,25 @@ export default function App() {
         selectedId={selectedId}
         focusMode={focusMode}
         calibrationMode={calibrationMode}
+        cohortMode={cohortMode}
         demoMode={demoMode}
         showCalibration={demoPhase === 'off'}
+        showCohort={demoPhase === 'off'}
         activeNodeIds={activeNodeIds}
         activeArrowIds={activeArrowIds}
         dimmedNodeIds={dimmedNodeIds}
         onSelect={select}
         onClear={clearSelection}
         onToggleCalibration={toggleCalibration}
+        onToggleCohort={toggleCohort}
       />
       <Legend />
-      <DetailPanel node={selectedNode} calibrationMode={calibrationMode} onClose={closePanel} />
+      <DetailPanel
+        node={selectedNode}
+        calibrationMode={calibrationMode}
+        cohortMode={cohortMode}
+        onClose={closePanel}
+      />
       <BiblePanel open={bibleOpen} onClose={closeBible} />
 
       {demoPhase === 'off' && <DemoLauncher onClick={openDemoPicker} />}
