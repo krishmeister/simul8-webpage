@@ -147,6 +147,7 @@ function NodeBody({ node, demoDimmed }: { node: DiagramNode; demoDimmed?: boolea
           <span className={styles.sourceTitle}>{node.title}</span>
           {node.subtitle && <span className={styles.sourceSub}>{node.subtitle}</span>}
           {node.ai && <span className={styles.sourceAi}>AI · LLM</span>}
+          {node.tag && <span className={styles.sourceTag}>{node.tag}</span>}
           {demoDimmed && <span className={styles.notUsed}>not used</span>}
         </div>
       );

@@ -502,6 +502,22 @@
   border-radius: 20px;
   white-space: nowrap;
 }
+/* solid moat badge on a source line-item (e.g. Cohort Aggregation's Moat III) —
+   same green-solid treatment The Log uses for Moat I, positioned like sourceAi */
+.sourceTag {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--surface);
+  background: var(--strong);
+  padding: 2px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
 .notUsed {
   position: absolute;
   bottom: 7px;
