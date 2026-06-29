@@ -111,7 +111,7 @@ export default function DetailPanel({ node, calibrationMode, cohortMode, onClose
         ) : node ? (
           <div className={styles.body}>
             <div className={styles.kickerRow}>
-              <span className={styles.kicker}>{VARIANT_LABEL[node.variant] ?? 'Node'}</span>
+              <span className={styles.kicker}>{node.kicker ?? VARIANT_LABEL[node.variant] ?? 'Node'}</span>
               {node.tag && <span className={styles.tag}>{node.tag}</span>}
               {node.badge && <span className={styles.tag}>{node.badge}</span>}
             </div>
