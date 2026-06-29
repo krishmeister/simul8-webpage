@@ -98,14 +98,14 @@ export default function DetailPanel({ node, calibrationMode, cohortMode, onClose
               <li><b>Product Data → Anonymize &amp; Aggregate</b> — the operator's own four sources.</li>
               <li><b>Ask the User → Anonymize &amp; Aggregate</b> — their declared gap-fills.</li>
               <li><b>Output → Anonymize &amp; Aggregate</b> — the same resolved outcome that feeds Calibration, branching here too.</li>
-              <li><b>Anonymize &amp; Aggregate → Cohort Aggregation</b> — anonymized cohort patterns.</li>
-              <li><b>Helium-ish tool → Cohort Aggregation</b> — the existing cohort-data tool, as one input.</li>
-              <li><b>Cohort Aggregation → Category Data</b> — enriches the priors every prediction starts from.</li>
+              <li><b>Anonymize &amp; Aggregate → Cohort Aggregation</b> — anonymized cohort patterns, deposited into the Category prior.</li>
             </ul>
             <p className={styles.foot}>
               An LLM only touches extraction; a deterministic, auditable step makes the privacy
-              guarantee. No individual operator is identifiable, and no operator sees another's data —
-              yet everyone's predictions get sharper as the pool grows. That is Moat III.
+              guarantee — and raw cohort data from the Helium-ish tool flows in here too. No individual
+              operator is identifiable, and no operator sees another's data. Cohort Aggregation now
+              lives inside Category, so it sharpens the priors every prediction starts from — no
+              loop-back needed. That is Moat III.
             </p>
           </div>
         ) : node ? (
