@@ -10,7 +10,10 @@ import type { DiagramNode, DiagramArrow } from '../types';
 //   - fullDescription = the complete explanation, shown in the detail panel
 // ---------------------------------------------------------------------------
 
-export const CANVAS = { w: 2300, h: 1880 };
+// The right region (x > 2300) is the cohort-loop column added alongside the
+// calibration loop; the extra width opens a clean lane for it without moving
+// any existing node.
+export const CANVAS = { w: 2760, h: 1880 };
 
 export const nodes: DiagramNode[] = [
   // ── Title ────────────────────────────────────────────────────────────────
@@ -594,6 +597,42 @@ export const nodes: DiagramNode[] = [
     fullDescription:
       'The output has four layers. 1 — The Outcome: the answer with its uncertainty band, confidence and maturity label; necessary, but table stakes. 2 — The Journey: the full reasoning rendered as an explorable canvas — the moat made visible, because anyone can show a number but few can show their work honestly. 3 — Interrogate & Adjust: chat and sliders that re-run the engines, turning a static report into a thinking tool. 4 — Share It: export to PDF, slides or image — the finishing layer that gets the answer in front of others.',
   },
+
+  // ── Cohort loop (Moat III) — the second compounding loop, right-hand column ──
+  // Cohort Aggregation sits above its processor: pooled, anonymized cohort
+  // patterns that feed back into the Category priors. The Anonymize & Aggregate
+  // box below it is where operator data is turned into those patterns — an LLM
+  // only on extraction, a deterministic step for the privacy guarantee.
+  {
+    id: 'cohort-agg',
+    variant: 'subbox',
+    position: { x: 2330, y: 362 },
+    size: { w: 350, h: 150 },
+    color: 'green',
+    title: 'Cohort Aggregation',
+    tag: 'Moat III',
+    tagStyle: 'solid',
+    subtitle: 'the compounding category-knowledge layer',
+    kicker: 'Category knowledge',
+    fullDescription:
+      "The compounding category-knowledge layer (Moat III). Pooled, anonymized cohort patterns from every operator's data and every resolved outcome — “brands in this cohort look like X and tend to see Y.” Sharpens the priors that feed every operator's prediction. The Helium-ish tool is one of its inputs.",
+  },
+  {
+    id: 'anon-aggregate',
+    variant: 'subbox',
+    position: { x: 2330, y: 556 },
+    size: { w: 350, h: 170 },
+    color: 'green',
+    title: 'Anonymize & Aggregate',
+    subtitle: 'raw operator data → shareable cohort patterns',
+    kicker: 'Cohort loop',
+    badges: [
+      { text: 'AI · LLM · extraction', kind: 'ai' },
+      { text: 'deterministic · anonymization', kind: 'solid' },
+    ],
+    fullDescription:
+      "Turns operators' raw data into shareable cohort patterns. An LLM extracts structure from the unstructured declarations (the AI-interview and Ask-the-User text); then a deterministic, auditable step strips identity and rolls individuals up to cohort level. No individual operator is identifiable, and no operator can see another's data.",
+  },
 ];
 
 export const arrows: DiagramArrow[] = [
@@ -775,6 +814,110 @@ export const arrows: DiagramArrow[] = [
     toOffset: 0.5,
     label: 'reads the record',
     labelPos: { x: 2090, y: 1150 },
+  },
+
+  // ── Cohort loop (the second compounding loop) — teal, routed in the right column ──
+  // operator data + declared gaps + resolved outcomes -> Anonymize & Aggregate
+  // -> Cohort Aggregation -> back into the Category priors.
+
+  // Product Data -> Anonymize : the operator's own four sources.
+  {
+    id: 'co-prod-anon',
+    from: 'panel-product',
+    to: 'anon-aggregate',
+    type: 'cohort',
+    fromSide: 'right',
+    toSide: 'left',
+    toOffset: 0.4,
+    label: 'operator data (all four sources)',
+    labelPos: { x: 2010, y: 700 },
+    via: [
+      { x: 1700, y: 400 },
+      { x: 1700, y: 712 },
+      { x: 2300, y: 712 },
+      { x: 2300, y: 624 },
+    ],
+  },
+  // Ask the User -> Anonymize : the declared gap-fills (out the orch/engine gutter, over the top).
+  {
+    id: 'co-ask-anon',
+    from: 'ask-user',
+    to: 'anon-aggregate',
+    type: 'cohort',
+    fromSide: 'right',
+    toSide: 'bottom',
+    toOffset: 0.66,
+    label: 'declared gap-fills',
+    labelPos: { x: 1180, y: 860 },
+    via: [
+      { x: 839, y: 999 },
+      { x: 839, y: 869 },
+      { x: 2560, y: 869 },
+    ],
+  },
+  // Output -> Anonymize : the same resolved outcome that feeds Calibration, branching here too.
+  {
+    id: 'co-out-anon',
+    from: 'output',
+    to: 'anon-aggregate',
+    type: 'cohort',
+    fromSide: 'right',
+    fromOffset: 0.32,
+    toSide: 'bottom',
+    toOffset: 0.31,
+    label: 'what actually happened',
+    labelPos: { x: 2470, y: 1300 },
+    labelAnchor: 'start',
+    via: [
+      { x: 2440, y: 1701 },
+      { x: 2440, y: 726 },
+    ],
+  },
+  // Anonymize -> Cohort Aggregation : the anonymized cohort patterns (short hop up).
+  {
+    id: 'co-anon-agg',
+    from: 'anon-aggregate',
+    to: 'cohort-agg',
+    type: 'cohort',
+    fromSide: 'top',
+    toSide: 'bottom',
+    label: 'anonymized cohort patterns',
+    labelPos: { x: 2540, y: 534 },
+    labelAnchor: 'start',
+  },
+  // Helium-ish tool -> Cohort Aggregation : the existing cohort-data tool is one of its inputs.
+  {
+    id: 'co-helium-agg',
+    from: 'src-cat-2',
+    to: 'cohort-agg',
+    type: 'cohort',
+    fromSide: 'right',
+    toSide: 'left',
+    toOffset: 0.5,
+    label: 'cohort data',
+    labelPos: { x: 1700, y: 726 },
+    via: [
+      { x: 1160, y: 541 },
+      { x: 1160, y: 736 },
+      { x: 2280, y: 736 },
+      { x: 2280, y: 437 },
+    ],
+  },
+  // Cohort Aggregation -> Category Data : enriches the priors, closing the loop (sweeps the top).
+  {
+    id: 'co-agg-cat',
+    from: 'cohort-agg',
+    to: 'panel-category',
+    type: 'cohort',
+    fromSide: 'top',
+    toSide: 'top',
+    toOffset: 0.5,
+    label: 'enriches the category priors',
+    labelPos: { x: 1640, y: 264 },
+    via: [
+      { x: 2505, y: 274 },
+      { x: 885, y: 274 },
+    ],
   },
 ];
 
