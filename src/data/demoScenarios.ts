@@ -100,6 +100,7 @@ const SUB_BOX_NODE: Record<string, string> = {
   'Economic activity':       'src-ext-2',
   'Prediction markets':      'src-ext-3',
   'Licensed feeds':          'src-ext-4',
+  'Category Chatter & Trends': 'src-ext-5',
   'Expert panel':            'src-cat-1',
   'Helium-ish tool':         'src-cat-2',
   'Validated research':      'src-cat-3',
@@ -108,6 +109,7 @@ const SUB_BOX_NODE: Record<string, string> = {
   'Marketing & acquisition': 'src-prod-2',
   'Operations & supply':     'src-prod-3',
   'AI interview':            'src-prod-4',
+  'Brand & Perception':      'src-prod-5',
   'Fuses the three sources': 'src-link-1',
   'Pre-built recipe':        'src-link-2',
   'Applied live':            'src-link-3',
@@ -207,7 +209,7 @@ const scenario1: Scenario = {
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Now that the question is understood — a festive pricing forecast — the system pulls the relevant slice from the warehouse: festive-seasonality and the apparel calendar from External, Gen-Z streetwear elasticity and the comparable-apparel cohort from Category, and Loudmouth's own Shopify history from Product. It leaves the rest of the warehouse untouched — this question doesn't need prediction-market or licensed-feed data. The slice, plus Riya's intent, is what moves forward.",
+        "Now that the question is understood — a festive pricing forecast — the system pulls the relevant slice from the warehouse: festive-seasonality and the apparel calendar from External, Gen-Z streetwear elasticity and the comparable-apparel cohort from Category, and Loudmouth's own Shopify history and current brand sentiment from Product. It leaves the rest of the warehouse untouched — this question doesn't need prediction-market or licensed-feed data. The slice, plus Riya's intent, is what moves forward.",
     },
     {
       stage: "subtaskA",
@@ -273,12 +275,13 @@ const scenario1: Scenario = {
         "≈ 4,200 units, range 3,300–5,400",
       ],
       narrative:
-        "Three engines agree on a strong but bounded lift; the agent-based sim is the optimist, betting a discount during peak festive attention triggers extra word-of-mouth among Gen-Z buyers. Because the engines disagree on the ceiling, confidence is moderate and the upper range is wide — the honest read is 'a good season is likely, a great one is possible.'",
+        "Three engines agree on a strong but bounded lift; the agent-based sim is the optimist, betting a discount during peak festive attention triggers extra word-of-mouth among Gen-Z buyers. Because the engines disagree on the ceiling, confidence is moderate and the upper range is wide — the honest read is 'a good season is likely, a great one is possible.' The brand's current sentiment reinforces the optimistic read — Loudmouth is in a genuinely good moment with Gen-Z, which is part of why the agent-based upside is credible rather than wishful; the system uses that mood as one input to the units forecast, not as a claim of its own.",
       evidence: [
         "Validated elasticity: streetwear ≈ −1.4",
         "Loudmouth's last festive window",
         "Cohort: Indian Gen-Z apparel discounts",
         "Diwali calendar + attention data",
+        "Brand sentiment — currently strongly positive (Gen-Z enthusiasm)",
       ],
     },
     interrogate: {
@@ -317,7 +320,7 @@ const scenario2: Scenario = {
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Now that the question is understood — a channel-reallocation question — the system pulls the relevant slice: channel-substitution priors and CAC benchmarks from Category, and Macrofuel's own channel-and-retention data from Product. Notably, it pulls NOTHING from External — a channel-mix question has no seasonal or macro dependency. This is the system selecting by question, not by habit: the warehouse holds external data, but this question doesn't call for it.",
+        "Now that the question is understood — a channel-reallocation question — the system pulls the relevant slice: channel-substitution priors and CAC benchmarks from Category, and Macrofuel's own channel-and-retention data and brand sentiment from Product. Notably, it pulls NOTHING from External — a channel-mix question has no seasonal or macro dependency. This is the system selecting by question, not by habit: the warehouse holds external data, but this question doesn't call for it.",
     },
     {
       stage: "subtaskA",
@@ -426,7 +429,7 @@ const scenario3: Scenario = {
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Now that the question is understood — a bundle-launch question for a hype drop — the system pulls launch-timing from External, bundle-economics and hype-drop cohort data from Category, and Aksh's own drop history and the fixed stock ceiling from Product. It leaves aside the parts of the warehouse a bundle question doesn't need. The slice plus Devika's intent moves forward.",
+        "Now that the question is understood — a bundle-launch question for a hype drop — the system pulls launch-timing from External, bundle-economics and hype-drop cohort data from Category, and Aksh's own drop history, the fixed stock ceiling, and brand/hype sentiment from Product. It leaves aside the parts of the warehouse a bundle question doesn't need. The slice plus Devika's intent moves forward.",
     },
     {
       stage: "subtaskA",
@@ -534,7 +537,7 @@ const scenario4: Scenario = {
       highlightNodeIds: [NODE.accumulate],
       caption: "Assembling the question + context…",
       detail:
-        "Now that the question is understood — a price rise with a competitive and inventory dimension — the system pulls the richest slice of the four: value-TWS elasticity AND the competitive-structure read from Category, and Pulsebeat's sales plus its inventory constraint from Product. This question pulls more from the warehouse than the others because it has the most moving parts — the competitor response and the inventory ceiling both matter. The slice plus Kabir's intent moves forward.",
+        "Now that the question is understood — a price rise with a competitive and inventory dimension — the system pulls the richest slice of the four: value-TWS elasticity AND the competitive-structure read from Category, and Pulsebeat's sales, its inventory constraint, and brand sentiment from Product. This question pulls more from the warehouse than the others because it has the most moving parts — the competitor response and the inventory ceiling both matter. The slice plus Kabir's intent moves forward.",
     },
     {
       stage: "subtaskA",

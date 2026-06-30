@@ -55,12 +55,13 @@ export interface ClosingStage {
 const STANDING_EXTERNAL: ComponentContribution = {
   component: "External",
   summary:
-    "The standing external backdrop for India — official statistics, the festival/holiday calendar, economic-activity signals, prediction markets and licensed feeds — ingested and refreshed continuously, before any question.",
+    "The standing external backdrop for India — official statistics, the festival/holiday calendar, economic-activity signals, prediction markets, licensed feeds, and category-level chatter and sentiment, scored from third-party-collected signals — ingested and refreshed continuously, before any question.",
   subBoxes: [
     { box: "Public authoritative", relevant: true, contributed: "Government and statutory sources for India — census demographics, RBI releases, official festival/holiday calendars and weather — held and refreshed continuously as the authoritative backdrop any D2C forecast sits inside." },
     { box: "Economic activity", relevant: true, contributed: "Higher-frequency economic-activity signals — challan traces, per-capita income and spending, and how cohorts form and spend — kept current as a live read on demand." },
     { box: "Prediction markets", relevant: true, contributed: "Prices from prediction markets (Polymarket, Kalshi) maintained as a standing crowd-probability signal the engines can weigh when a question calls for it." },
     { box: "Licensed feeds", relevant: true, contributed: "Commercial data held under license (e.g. Bloomberg, Tracxn) — kept available to fill gaps the public and activity layers leave open." },
+    { box: "Category Chatter & Trends", relevant: true, contributed: "Category-level mood and momentum — collected by third-party social-listening tools, scored by the LLM for sentiment and themes. Held standing as backdrop perception for the D2C wedge: whether the category is trending up or cooling, and what's moving in the cultural conversation." },
   ],
 };
 
@@ -104,6 +105,7 @@ const input_tees: InputDetail = {
         { box: "Marketing & acquisition", relevant: true, contributed: "Current traffic and conversion on the tee line, so the model knows the demand pool the discount acts on." },
         { box: "Operations & supply", relevant: false, contributed: "" },
         { box: "AI interview", relevant: true, contributed: "Riya's margin floor on the tees — confirming a 15% cut is survivable and what break-even units look like at the new price." },
+        { box: "Brand & Perception", relevant: true, contributed: "Loudmouth's current brand sentiment — reviews and social mentions, scored for mood. Right now it reads strongly positive (the latest drop landed well with Gen-Z), which is part of why the cascade upside is real. Enters as an input to the units forecast — never a target." },
       ],
     },
     STANDING_LINKING,
@@ -118,7 +120,7 @@ const closing_tees: ClosingStage = {
     predicted: "≈ 4,200 units, range 3,300–5,400, 69% confidence",
     actual: "4,560 units sold over the Diwali window",
     gap: "Within the credible range, in the upper half — the ABM upside (the Gen-Z cascade) proved closer to right than the conservative engines. Confidence was honest: a 69%-confidence call landing in-range is exactly calibrated.",
-    update: "ABM's weight for festive Gen-Z apparel questions ticks up; the conservative engines' slightly down. The next Loudmouth-style question routes a little more toward the cascade signal. The log records all of it, tamper-evident.",
+    update: "ABM's weight for festive Gen-Z apparel questions ticks up; the conservative engines' slightly down. The next Loudmouth-style question routes a little more toward the cascade signal. The log records all of it, tamper-evident. The brand-sentiment signal also earned its keep — it tracked the real lift, so its outcome-validated relationship now flows into the cohort layer. The raw sentiment score never does; only what reality confirmed.",
   },
   highlightNodeIds: ["output", "vault-log", "vault-calibration"],
 };
@@ -140,6 +142,7 @@ const input_protein: InputDetail = {
         { box: "Marketing & acquisition", relevant: true, contributed: "12 months of Meta and Google Ads performance — ROAS and CAC by channel, the core inputs for a reallocation question." },
         { box: "Operations & supply", relevant: false, contributed: "" },
         { box: "AI interview", relevant: true, contributed: "Arjun's true per-subscriber economics and his goal (lifetime value, not raw acquisition count) — which reframes what 'success' means for this question." },
+        { box: "Brand & Perception", relevant: true, contributed: "Macrofuel's brand sentiment — review and social mood. Relevant here mainly to retention: how subscribers feel about the brand affects whether they stay, feeding the lifetime-value side. An input, not a target." },
       ],
     },
     STANDING_LINKING,
@@ -176,6 +179,7 @@ const input_sneakers: InputDetail = {
         { box: "Marketing & acquisition", relevant: true, contributed: "Instagram-led demand signals — the size of the hype audience the drop will hit." },
         { box: "Operations & supply", relevant: true, contributed: "The limited stock quantity for the drop — the fixed ceiling that defines a sell-out and shapes the frenzy." },
         { box: "AI interview", relevant: true, contributed: "Devika's bundle margin and her two success metrics — total revenue AND sell-through speed — which frame the trade-off the answer must address." },
+        { box: "Brand & Perception", relevant: true, contributed: "Aksh's brand sentiment and hype signals — for a limited drop, mood is central: how much heat surrounds the brand directly shapes the frenzy. Strongly informs the agent-based cascade. An input, never a target." },
       ],
     },
     STANDING_LINKING,
@@ -212,6 +216,7 @@ const input_tws: InputDetail = {
         { box: "Marketing & acquisition", relevant: false, contributed: "" },
         { box: "Operations & supply", relevant: true, contributed: "Inventory levels and reorder lead times — revealing Pulsebeat was near an inventory ceiling, which is why lower unit velocity becomes a hidden benefit." },
         { box: "AI interview", relevant: true, contributed: "Kabir's true COGS and margin (so the per-unit margin gain is real, not assumed), his stock constraints, and his explicit flag that a competitor discount is likely — the human context no API exposes." },
+        { box: "Brand & Perception", relevant: true, contributed: "Pulsebeat's brand sentiment — value-buyer mood. Relevant to how price-sensitive buyers react to a rise and a likely competitor discount: a brand they feel warmly about tolerates a price increase better. An input to the revenue forecast." },
       ],
     },
     STANDING_LINKING,
