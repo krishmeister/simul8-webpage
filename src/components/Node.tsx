@@ -146,7 +146,7 @@ function NodeBody({ node, demoDimmed }: { node: DiagramNode; demoDimmed?: boolea
         <div className={styles.sourceBody}>
           <span className={styles.sourceTitle}>{node.title}</span>
           {node.subtitle && <span className={styles.sourceSub}>{node.subtitle}</span>}
-          {node.ai && <span className={styles.sourceAi}>AI · LLM</span>}
+          {node.ai && <span className={styles.sourceAi}>{node.aiLabel ?? 'AI · LLM'}</span>}
           {node.tag && <span className={styles.sourceTag}>{node.tag}</span>}
           {demoDimmed && <span className={styles.notUsed}>not used</span>}
         </div>
@@ -211,6 +211,16 @@ function NodeBody({ node, demoDimmed }: { node: DiagramNode; demoDimmed?: boolea
             {node.tag && <span className={styles.tagSolid}>{node.tag}</span>}
           </div>
           {node.subtitle && <span className={styles.boxSub}>{node.subtitle}</span>}
+        </div>
+      );
+
+    case 'note':
+      // A quiet free-text annotation pinned in open canvas space. `title` holds the
+      // caption sentence; an optional `subtitle` reads as a small lead-in label above it.
+      return (
+        <div className={styles.noteBody}>
+          {node.subtitle && <span className={styles.noteLead}>{node.subtitle}</span>}
+          <span className={styles.noteText}>{node.title}</span>
         </div>
       );
 

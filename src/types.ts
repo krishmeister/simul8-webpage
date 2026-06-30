@@ -27,7 +27,8 @@ export type NodeVariant =
   | 'overlay' // a translucent layer/band spanning a group (the listening layer)
   | 'group' // a translucent container enclosing a set of nodes (the engine ensemble)
   | 'engine' // prediction & simulation engine card
-  | 'vault'; // vault cards (the log / calibration)
+  | 'vault' // vault cards (the log / calibration)
+  | 'note'; // a small free-text annotation/caption pinned in open canvas space
 
 // A small pill rendered in a node's badge row. `kind` picks the visual style:
 //   ai    -> the unified "AI · LLM" marker (same colour everywhere the LLM operates)
@@ -51,6 +52,7 @@ export interface DiagramNode {
   tagStyle?: 'soft' | 'solid'; // head-tag rendering for subboxes (default soft); 'solid' matches the vault's Moat badge
   badges?: NodeBadge[]; // a row of small pills under the subtitle (e.g. the split AI/deterministic badge)
   ai?: boolean; // marks a node where the LLM operates -> renders an "AI · LLM" badge
+  aiLabel?: string; // overrides the "AI · LLM" badge text (e.g. "AI · LLM · SENTIMENT SCORING" where the LLM only scores, not extracts)
   tools?: string; // monospace tools/frameworks line (engine cards)
   badge?: string; // e.g. "+ Monte Carlo"
   active?: boolean; // the highlighted "active wedge" (D2C)
