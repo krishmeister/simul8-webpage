@@ -340,6 +340,23 @@ export const nodes: DiagramNode[] = [
     fullDescription:
       "What people feel and say about this specific brand — reviews, social mentions, word-of-mouth, return-reason themes, support sentiment. The raw chatter is collected by third-party social-listening tools (Brandwatch, Talkwalker, Sprout Social, Brand24) and the brand's own review platforms — so here the LLM does not do the collection. The LLM's job is to score sentiment and extract themes from that collected text. This is the brand's perception reality, distinct from Marketing & Acquisition, which captures the spend, not the mood. It enters as an input to predictions about resolvable outcomes — units, conversion, churn — and is never a prediction target of its own.",
   },
+  {
+    // The gating caption for Brand & Perception — makes the conditional cohort
+    // logic legible. A decorative `note` (no clicks), amber-tinted to tie it to
+    // Product, parked in the open band right of Brand & Perception. It sits in the
+    // clean lower slot — below the co-anon-agg arrow (y=739), level with the box's
+    // lower half — which is clear of BOTH lit cohort-loop labels (the co-prod-anon
+    // "hard operator data" label at y=678 and "anonymized cohort patterns" at y=728).
+    id: 'note-sentiment-gate',
+    variant: 'note',
+    position: { x: 1716, y: 742 },
+    size: { w: 484, h: 40 },
+    color: 'amber',
+    interactive: false,
+    z: 6,
+    title:
+      'Sentiment is gameable, so it never joins the cohort pool raw — only its outcome-validated relationship does, through the resolved-outcome path.',
+  },
 
   // Data Linking (purple) -----------------------------------------------------
   {
@@ -877,7 +894,9 @@ export const arrows: DiagramArrow[] = [
     fromSide: 'right',
     toSide: 'left',
     toOffset: 0.25,
-    label: 'operator data (all four sources)',
+    // Carries ONLY the four hard operator sources — sentiment (Brand & Perception)
+    // is deliberately excluded from this pooling arrow; see note-sentiment-gate.
+    label: 'hard operator data — commerce, marketing, ops, interview',
     labelPos: { x: 2010, y: 678 },
     via: [
       { x: 1700, y: 400 },
@@ -915,9 +934,13 @@ export const arrows: DiagramArrow[] = [
     fromOffset: 0.99,
     toSide: 'bottom',
     toOffset: 0.66,
-    label: 'what actually happened',
-    labelPos: { x: 2590, y: 1250 },
-    labelAnchor: 'start',
+    // The validated-sentiment relationship rides in on the resolved outcome: this
+    // is the ONLY route Brand & Perception's signal reaches the cohort. Anchored
+    // 'end' near the clamp limit (CANVAS.w-96=2664) so the long label doesn't clip
+    // the right edge; sits beside the x=2560 gutter, clear of the vault frame.
+    label: 'what actually happened (incl. the validated sentiment relationship)',
+    labelPos: { x: 2664, y: 1262 },
+    labelAnchor: 'end',
     via: [
       { x: 2199, y: 1612 },
       { x: 2560, y: 1612 },
