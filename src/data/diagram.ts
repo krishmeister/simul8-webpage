@@ -168,6 +168,23 @@ export const nodes: DiagramNode[] = [
     fullDescription:
       'Commercial data brought in under license — e.g. Bloomberg market data and Tracxn private-company intelligence — to fill gaps the public and activity layers leave open.',
   },
+  {
+    // The 5th External source — backdrop perception. Collection is done by
+    // third-party social-listening tools; the LLM only *scores* the collected
+    // text (hence the distinct SENTIMENT SCORING badge, not an extraction one).
+    // Like all External data it has no cohort arrow — it only informs predictions.
+    id: 'src-ext-5',
+    variant: 'source',
+    position: { x: 120, y: 710 },
+    size: { w: 450, h: 58 },
+    color: 'blue',
+    title: 'Category Chatter & Trends',
+    ai: true,
+    aiLabel: 'AI · LLM · SENTIMENT SCORING',
+    subtitle: "the category's mood and momentum",
+    fullDescription:
+      "The mood and momentum across the category as a whole — is the category trending up or cooling, what's the cultural conversation, is a trend or controversy moving perception. The raw signal is collected via third-party social-listening tools (Brandwatch, Talkwalker, Sprout Social, Brand24); the LLM scores sentiment and extracts themes from it. This is backdrop perception — the category's mood, not any single brand's — and like all perception signals it informs predictions about resolvable outcomes, never becomes a soft target.",
+  },
 
   // Category Data (green) -----------------------------------------------------
   {
@@ -302,6 +319,26 @@ export const nodes: DiagramNode[] = [
     subtitle: 'cost, margin, strategic context',
     fullDescription:
       'A structured AI interview captures what a database cannot: cost structure, true margins, and the strategic context and intent behind the numbers — the qualitative layer that reframes the quantitative one.',
+  },
+  {
+    // The 5th Product source — this brand's perception reality. Collection is
+    // done by third-party social-listening tools; the LLM only *scores* (distinct
+    // SENTIMENT SCORING badge). Deliberately has NO cohort arrow: sentiment is
+    // gameable, so it never pools into the cohort raw — only its outcome-validated
+    // relationship reaches the cohort, via the resolved-outcome path (co-out-anon).
+    // See the note-sentiment-gate caption. It DOES feed predictions like all
+    // Product data (carried into Accumulate by the input-frame -> accumulated arrow).
+    id: 'src-prod-5',
+    variant: 'source',
+    position: { x: 1200, y: 710 },
+    size: { w: 450, h: 58 },
+    color: 'amber',
+    title: 'Brand & Perception',
+    ai: true,
+    aiLabel: 'AI · LLM · SENTIMENT SCORING',
+    subtitle: 'the mood around this brand',
+    fullDescription:
+      "What people feel and say about this specific brand — reviews, social mentions, word-of-mouth, return-reason themes, support sentiment. The raw chatter is collected by third-party social-listening tools (Brandwatch, Talkwalker, Sprout Social, Brand24) and the brand's own review platforms — so here the LLM does not do the collection. The LLM's job is to score sentiment and extract themes from that collected text. This is the brand's perception reality, distinct from Marketing & Acquisition, which captures the spend, not the mood. It enters as an input to predictions about resolvable outcomes — units, conversion, churn — and is never a prediction target of its own.",
   },
 
   // Data Linking (purple) -----------------------------------------------------
@@ -663,6 +700,7 @@ export const arrows: DiagramArrow[] = [
   { id: 'a-ext-2', from: 'panel-external', to: 'src-ext-2', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-ext-3', from: 'panel-external', to: 'src-ext-3', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-ext-4', from: 'panel-external', to: 'src-ext-4', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
+  { id: 'a-ext-5', from: 'panel-external', to: 'src-ext-5', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-cat-1', from: 'panel-category', to: 'src-cat-1', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-cat-2', from: 'panel-category', to: 'src-cat-2', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-cat-3', from: 'panel-category', to: 'src-cat-3', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
@@ -672,6 +710,7 @@ export const arrows: DiagramArrow[] = [
   { id: 'a-prod-2', from: 'panel-product', to: 'src-prod-2', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-prod-3', from: 'panel-product', to: 'src-prod-3', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-prod-4', from: 'panel-product', to: 'src-prod-4', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
+  { id: 'a-prod-5', from: 'panel-product', to: 'src-prod-5', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-link-1', from: 'panel-linking', to: 'src-link-1', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-link-2', from: 'panel-linking', to: 'src-link-2', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
   { id: 'a-link-3', from: 'panel-linking', to: 'src-link-3', type: 'flow', fromSide: 'bottom', toSide: 'left', curve: 0.8 },
