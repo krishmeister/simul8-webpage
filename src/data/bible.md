@@ -46,6 +46,7 @@ Public-domain and licensed information that sets the macro and category backdrop
 - **Economic activity data** — challan data, cigarette data, per-capita data, in cohort form. A signal of business and economic activity. (Aggregate/published only — never individual-level records.)
 - **Prediction-market data** — odds and crowd forecasts from Polymarket, Kalshi, and similar, used as an input signal. Strong for event-driven category dynamics, near-useless for micro-decisions.
 - **Licensed premium feeds** — Bloomberg (financial/market data), Tracxn (company/funding data), obtained under license. (Licensed, never scraped — provenance must be clean because the product sells auditability.)
+- **Category Chatter & Trends** *(LLM for sentiment scoring, not extraction)* — the mood and momentum across the category as a whole: whether the category is trending up or cooling, what's moving in the cultural conversation, whether a trend or controversy is shifting perception. The raw signal is collected by third-party social-listening tools (Brandwatch, Talkwalker, Sprout Social, Brand24) rather than gathered by Simul8 directly; the LLM's role here is to score sentiment and extract themes from that collected text. This is backdrop perception — the category's mood, not any one brand's — and like every perception signal it informs predictions about resolvable outcomes, never becomes a soft target of its own.
 
 ### 2.2 Category Data — *priors for this market*
 
@@ -65,6 +66,7 @@ The brand's own data, enabling predictions specific to them. Split into automati
 - **Marketing & acquisition data** *(feeds, no LLM)* — ad spend, ROAS, CAC, creative performance, channel mix. Tools: Meta Ads, Google AdWords, and other ad/analytics platforms.
 - **Operations & supply data** *(part feed, part interview)* — inventory levels, fulfillment, supplier lead times, reorder capacity, offline/wholesale channels. Digital inventory state comes via ERP/inventory tools (SAP, Shopify Inventory); supply constraints and offline reality come via the AI interview where no system holds them.
 - **AI interview — cost, margin & strategic context** *(uses LLM for conversation)* — captures what no API exposes: COGS, true margins, pricing floors, plus the decision itself, goals, risk tolerance, and brand constraints. Also validates the feed data — sanity-checking declared floors and reorder limits against what the systems report. Two conversations live here: a durable onboarding conversation (cost structure, constraints, goals) and a per-decision conversation (the specific question). The interview elicits and clarifies; it never *infers* missing data.
+- **Brand & Perception** *(LLM for sentiment scoring, not extraction)* — what people feel and say about this specific brand: reviews, social mentions, word-of-mouth, return-reason themes, support sentiment. The raw chatter is collected by third-party social-listening tools (Brandwatch, Talkwalker, Sprout Social, Brand24) and the brand's own review platforms — so here, unusually, the LLM does not do the collection; its job is to score sentiment and extract themes from text that is already gathered. This is the brand's perception reality, deliberately distinct from Marketing & Acquisition, which captures the spend, not the mood. It enters as an input to predictions about resolvable outcomes — units, conversion, churn — and is never a prediction target of its own. (How this gameable signal is treated with special care is detailed in "Perception & Sentiment" below.)
 
 ### 2.4 Data Linking — *one query-time picture*
 
@@ -225,13 +227,53 @@ The calibration log (Moat I) proves the system's honesty; the cohort loop builds
 
 ---
 
-## 10. Where the LLM Is — and Isn't
+## 10. Perception & Sentiment — Mood as a Calibrated Signal
+
+Two of the input signals — Brand & Perception (one brand's mood) and Category Chatter & Trends (the category's mood) — are different in kind from everything else the system holds. They are soft: sentiment, perception, the conversation around a product. Soft signals are exactly what a calibrated system should be suspicious of, because they are easy to fake and hard to pin to reality. Simul8 includes them anyway — but on terms that keep them rigorous rather than letting them turn the product into a vibes dashboard.
+
+### Why mood is worth including
+
+The same decision lands differently depending on how a brand is perceived. A 15% price cut on a brand riding a wave of genuine enthusiasm pours fuel on a fire; the same cut on a brand in the middle of a quality backlash may just attract bargain-hunters who never return. The Shopify numbers are identical in both cases — what differs is the mood. Perception is a modifier on how well a decision performs, and a system blind to it treats those two worlds as the same. So mood earns its place — as an input that sharpens predictions about hard outcomes, not as an answer of its own.
+
+### Measuring vs. trusting
+
+Two different jobs, and only one of them is hard. Measuring mood — reading the current sentiment — can be done cleanly from day one: third-party social-listening tools (Brandwatch, Talkwalker, Sprout Social, Brand24) and the brand's own review platforms gather the raw chatter, and the LLM scores it into sentiment and themes. That is why the sentiment boxes carry an "AI · LLM · sentiment scoring" marker rather than the usual extraction marker — here the collection is bought, and the language model only scores. Trusting mood — knowing how much it actually matters for a given brand — is the hard part, and it is not assumed. It is earned the same way every signal's weight is earned: borrowed from a category-level prior at first, then corrected against that brand's own resolved outcomes.
+
+### The one rule that keeps it honest
+
+Sentiment is an input to predictions about resolvable outcomes — units, conversion, churn — and never a prediction target itself. Simul8 will say "given the current mood, here is the units forecast" (resolvable, gradeable). It will never say "we predict brand love will rise 12%" (soft, ungradeable, uncalibratable). The moment perception becomes the thing being predicted rather than an input to predicting something real, the calibration discipline that makes the whole system trustworthy is broken. Holding that line is what separates this from every tool that sells a confident-sounding sentiment score and calls it insight.
+
+### Why gaming defeats itself
+
+The obvious worry: a brand games its reviews — buys five thousand glowing ones — and inflates its own sentiment. The answer is that calibration is per-brand, and it grades sentiment against that brand's own real sales. A brand with faked enthusiasm shows a tell-tale divergence: sentiment sky-high, actual sales ordinary. Within a few prediction-and-resolution cycles the system learns that, for this brand, sentiment does not predict sales — and down-weights it. A brand with genuine enthusiasm shows sentiment that actually tracks sales, and the system leans on it. Same signal type, opposite weight, because each is judged against its own outcomes. Crucially, the system never has to detect that reviews are fake; it only has to notice that the signal does not predict reality — which is enough. You cannot fool a system that trusts no input at its face value, only as far as it predicts a real outcome. This is the same principle that runs through the whole architecture — why the agent-based engine uses real distributions rather than invented personas, why everything grades against resolvable outcomes. Any signal trusted on its face can be gamed; Simul8 trusts nothing on its face.
+
+### The cohort guard — aggregate only what calibration has validated
+
+Per-brand calibration protects each brand from another's gaming. But the cohort loop pools across brands by design — so its gaming-resistance is not automatic, and it must be engineered in. The rule: the cohort loop aggregates outcome-validated relationships, not raw claimed signals. A gamed brand does not contribute its raw sentiment score to the shared category prior; it contributes its graded relationship — "for this brand, sentiment did not predict sales" — which is correct information, and actually makes the pooled prior more accurate about unreliable sentiment, not less. And a brand contributes to the cohort only once it has resolved outcomes, so a brand-new gamer cannot inject raw fake data into the shared pool on day one. This is why, on the architecture, Brand & Perception has no direct line into the cohort path: the four hard operator sources pool directly, but sentiment reaches the cohort only through the resolved-outcome path, once an outcome has validated it. Aggregation runs downstream of calibration, and inherits its gaming-resistance rather than bypassing it.
+
+### The cold-start window — honest about the gap
+
+There is one genuine soft spot, and it is worth naming rather than hiding. Before a new brand has resolved outcomes of its own, the system has nothing brand-specific to calibrate against, so it leans on the category-level prior as a starting guess. In that window, a brand's signals — including a gamed one — borrow a category-level level of trust before that brand's own reality-check kicks in. The protection is not instantaneous; it self-corrects as outcomes resolve. Five things shrink and bound that window, and they stack:
+
+1. **Weight hard-to-fake signals higher from day one.** Verified-purchase reviews are far harder to fake than anonymous social noise; trusting the verified signal more, even at launch, deflates most day-one gaming on its own.
+2. **Start new brands at a deliberately conservative sentiment weight, and let it earn up.** Asymmetric caution: a new brand with unverified mood gets low initial trust by default, so gaming a signal that starts near zero buys very little.
+3. **The borrowed prior is itself gaming-resistant.** Because the cohort prior is built from many reality-checked brands, a few gamers are outliers that do not move the aggregate — so the thing a cold-start brand borrows is hard to game in the first place.
+4. **Anomaly check on suspicious bursts.** Five thousand reviews landing in a single day is itself a tell; discounting sentiment that arrives in implausible spikes is a cheap, reasonable heuristic — a light forensic check, not the core mechanism.
+5. **Fast outcomes bound the window.** This is where the D2C wedge quietly helps: D2C sales resolve in days to weeks, so calibration kicks in fast and the cold-start window is short by nature. A vertical with year-long outcomes would have a painful cold-start; this one does not.
+
+So the honest summary: cold-start is a real but temporary window, not a permanent weakness — shrunk by conservative-and-verified weighting, bounded by fast-resolving outcomes, and protected by a prior that is itself hard to game.
+
+---
+
+## 11. Where the LLM Is — and Isn't
 
 The single most important architectural boundary. The LLM lives **only at the edges**:
 
 | Stage | LLM? | Role |
 |---|---|---|
 | Input extraction (public data, research, competitive, expert panel, AI interview) | **Yes** | Extraction & structuring — parsing messy sources into structured form |
+| Input — Brand & Perception (sentiment) | **Yes** | Scoring only — collection is by third-party tools; the LLM scores sentiment and themes from already-gathered text, never infers an outcome |
+| Input — Category Chatter & Trends | **Yes** | Same — third-party collection; the LLM scores sentiment/themes, nothing more |
 | Orchestrator — Sub-task A | **Yes** | Intent parsing — turning the raw request into a structured problem |
 | Orchestrator — Sub-task B | **No** | Calibration-driven routing; LLM may classify but never sets weights |
 | The seven engines (inference) | **No** | Pure statistics, simulation, and ML — never LLM |
@@ -244,7 +286,7 @@ The hollow, LLM-free middle — where the actual predicting and grading happen �
 
 ---
 
-## 11. The Moats
+## 12. The Moats
 
 Five moats, in order of defensibility:
 
@@ -261,7 +303,7 @@ Capability gains in frontier LLMs flow into the system as *better input quality*
 
 ---
 
-## 12. The Through-Line
+## 13. The Through-Line
 
 Because prediction is niche-by-niche and needs *wired-up* data, Simul8 builds four data components (External, Category, Product, Linking), feeds them through an orchestrator that routes each question, fires a subset of seven calibrated engines, distills their answers in a fusion layer weighted by proven trust, and grades every outcome in a tamper-evident log that re-teaches the whole system. The same engine sits under every industry; reach is the sum of conquered niches, not a global launch. And the one thing that makes it all defensible — the calibration log — is the one thing that can only be earned by running, never bought.
 
